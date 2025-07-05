@@ -117,7 +117,11 @@
         }
 
         .sidebar.expanded {
-            width: 350px;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 2000;
         }
 
         .sidebar-header {
@@ -194,6 +198,7 @@
 
         .form-grid {
             display: grid;
+            grid-template-columns: 1fr;
             gap: 1.5rem;
             margin-bottom: 2rem;
         }
@@ -307,7 +312,7 @@
 
         .form-buttons {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: 1fr;
             gap: 1rem;
             margin-top: 2rem;
         }
@@ -403,7 +408,7 @@
 
         .stats-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: 1fr;
             gap: 1.5rem;
             margin-bottom: 2rem;
         }
@@ -480,25 +485,24 @@
             display: none;
         }
 
-        @media (max-width: 768px) {
-            .sidebar.expanded {
-                width: 100%;
-                position: fixed;
-                top: 0;
-                left: 0;
-                z-index: 2000;
-            }
-            
-            .content-area {
-                margin: 20px;
-            }
-            
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-            
+        /* Progressive enhancement for larger screens */
+        @media (min-width: 769px) {
             .stats-container {
-                grid-template-columns: 1fr;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+            
+            .form-buttons {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .sidebar.expanded {
+                width: 350px;
+                position: relative;
+                top: auto;
+                left: auto;
+                z-index: auto;
             }
         }
     </style>

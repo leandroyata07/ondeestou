@@ -245,6 +245,62 @@
         @media (max-width: 720px) {
             .modal-content { min-width: 95vw; padding: 1rem; }
         }
+
+        .main-header-fixed {
+            position: sticky;
+            top: 0;
+            background: #f7f8fa;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+            padding: 1.2rem 1.2rem 1.2rem 1.2rem;
+            border-radius: 15px 15px 0 0;
+            box-shadow: 0 2px 8px rgba(30,60,114,0.07);
+            min-height: 70px;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+        }
+        .user-photo-header {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #1e3c72;
+            background: #f5f5f5;
+            box-shadow: 0 1px 4px rgba(30,60,114,0.10);
+        }
+        .user-name-header {
+            font-weight: bold;
+            color: #1e3c72;
+            font-size: 1.15rem;
+            letter-spacing: 0.5px;
+        }
+        .main-header-fixed h1 {
+            margin: 0;
+            font-size: 1.7rem;
+            color: #1e3c72;
+            flex: 1;
+            text-align: left;
+        }
+        .form-buttons-fixed {
+            position: sticky;
+            bottom: 0;
+            background: #f7f8fa;
+            border-radius: 0 0 15px 15px;
+            box-shadow: 0 -2px 8px rgba(30,60,114,0.07);
+            padding: 1.2rem 1.2rem 1.2rem 1.2rem;
+            z-index: 10;
+            margin-bottom: 0;
+        }
+        @media (max-width: 720px) {
+            .main-header-fixed, .form-buttons-fixed { padding: 0.7rem; }
+            .user-photo-header { width: 36px; height: 36px; }
+            .main-header-fixed h1 { font-size: 1.1rem; }
+        }
     </style>
 </head>
 <body>
@@ -312,8 +368,13 @@
 
     <!-- Interface Principal -->
     <div class="main-container" id="mainContainer">
-        <h1>📍 Controle de Patrimônio</h1>
-        
+        <div class="main-header-fixed">
+            <div class="user-info">
+                <img id="userPhotoHeader" class="user-photo-header" src="" alt="Foto do Usuário" style="display:none;">
+                <span id="userNameHeader" class="user-name-header"></span>
+            </div>
+            <h1>📍 Controle de Patrimônio</h1>
+        </div>
         <form id="equipmentForm">
             <div class="form-grid">
                 <div class="input-group">
@@ -389,7 +450,6 @@
                     </div>
                 </div>
             </div>
-            
             <div class="input-group">
                 <label><i class="fas fa-comment"></i> Observações</label>
                 <div class="input-icon">
@@ -397,8 +457,7 @@
                     <i class="fas fa-edit"></i>
                 </div>
             </div>
-            
-            <div class="form-buttons">
+            <div class="form-buttons form-buttons-fixed">
                 <button type="submit"><i class="fas fa-check-circle"></i> Salvar Item</button>
                 <button type="button" class="btn-ver-itens" onclick="abrirModalItens()">
                     <i class="fas fa-eye"></i> Ver Itens
@@ -411,7 +470,6 @@
                 </button>
             </div>
         </form>
-
         <div class="export-notice" id="exportNotice"></div>
 
         <!-- Modal de visualização de itens -->
@@ -460,14 +518,32 @@
         document.getElementById('registerForm').addEventListener('submit', function(e) {
             e.preventDefault();
 
-            // Salvar foto (se houver) no localStorage (por id do usuário)
+            // Obter dados do novo usuário
             const usuario = document.getElementById('newUser').value || "";
+            const senha = document.getElementById('newPassword').value || "";
             const fotoDataURL = localStorage.getItem('tempRegPhoto') || "";
-            if(usuario && fotoDataURL) {
+
+            if (!usuario || !senha) {
+                alert('Preencha o nome de usuário e a senha para registrar.');
+                return;
+            }
+
+            // Recupera lista de usuários existente ou cria nova
+            let usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
+            // Verifica se já existe usuário com o mesmo nome
+            if (usuarios.some(u => u.usuario === usuario)) {
+                alert('Nome de usuário já existe. Escolha outro.');
+                return;
+            }
+            // Adiciona novo usuário
+            usuarios.push({ usuario, senha, foto: fotoDataURL });
+            localStorage.setItem('usuarios', JSON.stringify(usuarios));
+            // Salva foto separada (opcional)
+            if (fotoDataURL) {
                 localStorage.setItem('userphoto_' + usuario, fotoDataURL);
                 localStorage.removeItem('tempRegPhoto');
             }
-            alert('Funcionalidade de registro desativada. Clique em "Entrar" para acessar o sistema.');
+            alert('Usuário registrado com sucesso! Faça login.');
             toggleRegister();
         });
 
@@ -626,6 +702,20 @@
             document.getElementById('loginContainer').style.display = 'none';
             document.getElementById('mainContainer').style.display = 'block';
             loadDraft();
+            // Exibir nome e foto do usuário logado
+            const username = document.getElementById('username').value;
+            let usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
+            let usuario = usuarios.find(u => u.usuario === username);
+            document.getElementById('userNameHeader').textContent = username || '';
+            const foto = usuario && usuario.foto ? usuario.foto : '';
+            const fotoEl = document.getElementById('userPhotoHeader');
+            if (foto) {
+                fotoEl.src = foto;
+                fotoEl.style.display = '';
+            } else {
+                fotoEl.src = '';
+                fotoEl.style.display = 'none';
+            }
         }
 
         // Função para excluir item

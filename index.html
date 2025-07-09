@@ -332,14 +332,21 @@
             <div class="input-group">
                 <label><i class="fas fa-user-edit"></i> Novo Usuário</label>
                 <div class="input-icon">
-                    <input type="text" id="newUser" placeholder="Opcional">
+                    <input type="text" id="newUser" placeholder="Nome de usuário" required>
                     <i class="fas fa-users"></i>
+                </div>
+            </div>
+            <div class="input-group">
+                <label><i class="fas fa-envelope"></i> E-mail</label>
+                <div class="input-icon">
+                    <input type="email" id="newEmail" placeholder="E-mail" required>
+                    <i class="fas fa-envelope"></i>
                 </div>
             </div>
             <div class="input-group">
                 <label><i class="fas fa-lock"></i> Nova Senha</label>
                 <div class="input-icon">
-                    <input type="password" id="newPassword" placeholder="Opcional">
+                    <input type="password" id="newPassword" placeholder="Senha" required>
                     <i class="fas fa-shield-alt"></i>
                 </div>
             </div>
@@ -364,6 +371,69 @@
                 <a onclick="toggleRegister()"><i class="fas fa-sign-in-alt"></i> Já tem uma conta? Faça login</a>
             </div>
         </form>
+        <!-- Modal Editar Perfil -->
+        <div id="modalEditarPerfil" class="modal-itens hidden">
+            <div class="modal-content" style="max-width:420px;">
+                <span class="close-modal" onclick="fecharModalEditarPerfil()">&times;</span>
+                <h2>Editar Perfil</h2>
+                <form id="formAutenticarPerfil">
+                    <div class="input-group">
+                        <label><i class="fas fa-envelope"></i> E-mail</label>
+                        <div class="input-icon">
+                            <input type="email" id="editEmailLogin" required>
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label><i class="fas fa-lock"></i> Senha</label>
+                        <div class="input-icon">
+                            <input type="password" id="editSenhaLogin" required>
+                            <i class="fas fa-key"></i>
+                        </div>
+                    </div>
+                    <button type="submit"><i class="fas fa-sign-in-alt"></i> Autenticar</button>
+                </form>
+                <form id="formEditarPerfil" class="hidden">
+                    <div class="input-group">
+                        <label><i class="fas fa-user-edit"></i> Nome de Usuário</label>
+                        <div class="input-icon">
+                            <input type="text" id="editNome" required>
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label><i class="fas fa-envelope"></i> E-mail</label>
+                        <div class="input-icon">
+                            <input type="email" id="editEmail" required>
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label><i class="fas fa-lock"></i> Nova Senha</label>
+                        <div class="input-icon">
+                            <input type="password" id="editSenha" required>
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label><i class="fas fa-camera"></i> Foto do Usuário (opcional)</label>
+                        <img id="editPhotoPreview" class="reg-photo-preview" src="" alt="Prévia da Foto" style="display:none;">
+                        <div class="reg-photo-btns">
+                            <button type="button" onclick="abrirCameraEditar()" title="Tirar Foto"><i class="fas fa-camera"></i></button>
+                            <button type="button" onclick="document.getElementById('editPhotoInput').click()" title="Fazer Upload"><i class="fas fa-upload"></i></button>
+                            <button type="button" onclick="removerFotoEditar()" title="Remover Foto"><i class="fas fa-times"></i></button>
+                        </div>
+                        <input type="file" id="editPhotoInput" accept="image/*" style="display:none;" onchange="uploadFotoEditar(event)">
+                        <video id="editCameraVideo" width="100%" height="160" autoplay playsinline style="display:none; border-radius:12px; border:1px solid #ccc;"></video>
+                        <button type="button" id="tirarFotoBtnEditar" onclick="tirarFotoEditar()" style="display:none; margin: 0.5rem auto 0.2rem auto; width:100%; background:#1e3c72;">
+                          <i class="fas fa-camera-retro"></i> Capturar
+                        </button>
+                    </div>
+                    <button type="submit"><i class="fas fa-save"></i> Salvar Alterações</button>
+                    <button type="button" id="btnExcluirPerfil" style="background:#e74c3c; margin-top:0.7rem;"><i class="fas fa-user-times"></i> Excluir Perfil</button>
+                </form>
+            </div>
+        </div>
     </div>
 
     <!-- Interface Principal -->
@@ -514,31 +584,42 @@
             showMainInterface();
         });
 
-        // Evento de registro (opcional)
-        document.getElementById('registerForm').addEventListener('submit', function(e) {
+        // Adiciona botão Editar Perfil na tela de login
+        const loginForm = document.getElementById('loginForm');
+        const editarPerfilBtn = document.createElement('button');
+        editarPerfilBtn.type = 'button';
+        editarPerfilBtn.innerHTML = '<i class="fas fa-user-cog"></i> Editar Perfil';
+        editarPerfilBtn.style.marginTop = '0.7rem';
+        editarPerfilBtn.onclick = function() { abrirModalEditarPerfil(); };
+        loginForm.appendChild(editarPerfilBtn);
+
+        // Validação e registro com e-mail obrigatório
+        const registerForm = document.getElementById('registerForm');
+        registerForm.addEventListener('submit', function(e) {
             e.preventDefault();
-
-            // Obter dados do novo usuário
-            const usuario = document.getElementById('newUser').value || "";
-            const senha = document.getElementById('newPassword').value || "";
+            const usuario = document.getElementById('newUser').value.trim();
+            const email = document.getElementById('newEmail').value.trim().toLowerCase();
+            const senha = document.getElementById('newPassword').value;
             const fotoDataURL = localStorage.getItem('tempRegPhoto') || "";
-
-            if (!usuario || !senha) {
-                alert('Preencha o nome de usuário e a senha para registrar.');
+            if (!usuario || !email || !senha) {
+                alert('Preencha todos os campos obrigatórios.');
                 return;
             }
-
-            // Recupera lista de usuários existente ou cria nova
+            if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+                alert('Digite um e-mail válido.');
+                return;
+            }
             let usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
-            // Verifica se já existe usuário com o mesmo nome
             if (usuarios.some(u => u.usuario === usuario)) {
                 alert('Nome de usuário já existe. Escolha outro.');
                 return;
             }
-            // Adiciona novo usuário
-            usuarios.push({ usuario, senha, foto: fotoDataURL });
+            if (usuarios.some(u => u.email === email)) {
+                alert('E-mail já cadastrado. Use outro.');
+                return;
+            }
+            usuarios.push({ usuario, email, senha, foto: fotoDataURL });
             localStorage.setItem('usuarios', JSON.stringify(usuarios));
-            // Salva foto separada (opcional)
             if (fotoDataURL) {
                 localStorage.setItem('userphoto_' + usuario, fotoDataURL);
                 localStorage.removeItem('tempRegPhoto');
@@ -547,83 +628,172 @@
             toggleRegister();
         });
 
-        // ----------- CÂMERA E FOTO NO REGISTRO ---------------
-        let cameraStream = null;
-
-        function abrirCamera() {
-            const video = document.getElementById('regCameraVideo');
-            const tirarFotoBtn = document.getElementById('tirarFotoBtn');
+        // Modal Editar Perfil
+        function abrirModalEditarPerfil() {
+            document.getElementById('modalEditarPerfil').classList.add('active');
+            document.getElementById('modalEditarPerfil').classList.remove('hidden');
+            document.getElementById('formAutenticarPerfil').classList.remove('hidden');
+            document.getElementById('formEditarPerfil').classList.add('hidden');
+            document.getElementById('formAutenticarPerfil').reset();
+            document.getElementById('formEditarPerfil').reset();
+            removerFotoEditar();
+        }
+        function fecharModalEditarPerfil() {
+            document.getElementById('modalEditarPerfil').classList.remove('active');
+            document.getElementById('modalEditarPerfil').classList.add('hidden');
+        }
+        // Autenticação para edição
+        let usuarioEditando = null;
+        document.getElementById('formAutenticarPerfil').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('editEmailLogin').value.trim().toLowerCase();
+            const senha = document.getElementById('editSenhaLogin').value;
+            let usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
+            const usuario = usuarios.find(u => u.email === email && u.senha === senha);
+            if (!usuario) {
+                alert('E-mail ou senha incorretos.');
+                return;
+            }
+            usuarioEditando = usuario;
+            document.getElementById('formAutenticarPerfil').classList.add('hidden');
+            document.getElementById('formEditarPerfil').classList.remove('hidden');
+            document.getElementById('editNome').value = usuario.usuario;
+            document.getElementById('editEmail').value = usuario.email;
+            document.getElementById('editSenha').value = usuario.senha;
+            if (usuario.foto) {
+                document.getElementById('editPhotoPreview').src = usuario.foto;
+                document.getElementById('editPhotoPreview').style.display = '';
+            } else {
+                removerFotoEditar();
+            }
+        });
+        // Salvar edição de perfil
+        const formEditarPerfil = document.getElementById('formEditarPerfil');
+        formEditarPerfil.addEventListener('submit', function(e) {
+            e.preventDefault();
+            let usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
+            const novoNome = document.getElementById('editNome').value.trim();
+            const novoEmail = document.getElementById('editEmail').value.trim().toLowerCase();
+            const novaSenha = document.getElementById('editSenha').value;
+            const novaFoto = localStorage.getItem('tempEditPhoto') || usuarioEditando.foto || '';
+            if (!novoNome || !novoEmail || !novaSenha) {
+                alert('Preencha todos os campos obrigatórios.');
+                return;
+            }
+            if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(novoEmail)) {
+                alert('Digite um e-mail válido.');
+                return;
+            }
+            // Verifica duplicidade de e-mail e nome (exceto o próprio)
+            if (usuarios.some(u => u.email === novoEmail && u !== usuarioEditando)) {
+                alert('E-mail já cadastrado. Use outro.');
+                return;
+            }
+            if (usuarios.some(u => u.usuario === novoNome && u !== usuarioEditando)) {
+                alert('Nome de usuário já existe. Escolha outro.');
+                return;
+            }
+            // Atualiza dados
+            usuarioEditando.usuario = novoNome;
+            usuarioEditando.email = novoEmail;
+            usuarioEditando.senha = novaSenha;
+            usuarioEditando.foto = novaFoto;
+            localStorage.setItem('usuarios', JSON.stringify(usuarios));
+            if (novaFoto) {
+                localStorage.setItem('userphoto_' + novoNome, novaFoto);
+                localStorage.removeItem('tempEditPhoto');
+            }
+            alert('Perfil atualizado com sucesso!');
+            fecharModalEditarPerfil();
+        });
+        // Foto editar perfil
+        function abrirCameraEditar() {
+            const video = document.getElementById('editCameraVideo');
+            const tirarFotoBtn = document.getElementById('tirarFotoBtnEditar');
             video.style.display = '';
             tirarFotoBtn.style.display = '';
-            // Esconde preview se tinha
-            document.getElementById('regPhotoPreview').style.display = 'none';
-
+            document.getElementById('editPhotoPreview').style.display = 'none';
+            // Corrige: para evitar múltiplos streams, para o anterior
+            if (video._stream) {
+                video._stream.getTracks().forEach(track => track.stop());
+                video._stream = null;
+            }
             navigator.mediaDevices.getUserMedia({ video: true })
                 .then(function(stream) {
-                    cameraStream = stream;
                     video.srcObject = stream;
+                    video._stream = stream;
                 })
                 .catch(function(err) {
                     alert('Não foi possível acessar a câmera: ' + err);
-                    fecharCamera();
+                    fecharCameraEditar();
                 });
         }
-
-        function tirarFoto() {
-            const video = document.getElementById('regCameraVideo');
+        function tirarFotoEditar() {
+            const video = document.getElementById('editCameraVideo');
             const canvas = document.createElement('canvas');
             canvas.width = video.videoWidth || 240;
             canvas.height = video.videoHeight || 240;
             const ctx = canvas.getContext('2d');
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
             const dataURL = canvas.toDataURL('image/png');
-            mostrarFotoPreview(dataURL);
-            fecharCamera();
-            // Salva temporariamente até registro
-            localStorage.setItem('tempRegPhoto', dataURL);
+            mostrarFotoPreviewEditar(dataURL);
+            fecharCameraEditar();
+            localStorage.setItem('tempEditPhoto', dataURL);
         }
-
-        function fecharCamera() {
-            const video = document.getElementById('regCameraVideo');
-            const tirarFotoBtn = document.getElementById('tirarFotoBtn');
+        function fecharCameraEditar() {
+            const video = document.getElementById('editCameraVideo');
+            const tirarFotoBtn = document.getElementById('tirarFotoBtnEditar');
             video.style.display = 'none';
             tirarFotoBtn.style.display = 'none';
-            if (cameraStream) {
-                cameraStream.getTracks().forEach(track => track.stop());
-                cameraStream = null;
+            if (video._stream) {
+                video._stream.getTracks().forEach(track => track.stop());
+                video._stream = null;
             }
             video.srcObject = null;
         }
-
-        function uploadFoto(event) {
+        function uploadFotoEditar(event) {
             const file = event.target.files[0];
             if (file && file.type.startsWith('image/')) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    mostrarFotoPreview(e.target.result);
-                    // Salva temporariamente até registro
-                    localStorage.setItem('tempRegPhoto', e.target.result);
+                    mostrarFotoPreviewEditar(e.target.result);
+                    localStorage.setItem('tempEditPhoto', e.target.result);
                 }
                 reader.readAsDataURL(file);
             }
-            // Limpa valor para permitir upload novamente se quiser
             event.target.value = "";
         }
-
-        function mostrarFotoPreview(dataURL) {
-            const preview = document.getElementById('regPhotoPreview');
+        function mostrarFotoPreviewEditar(dataURL) {
+            const preview = document.getElementById('editPhotoPreview');
             preview.src = dataURL;
             preview.style.display = '';
         }
-
-        function removerFoto() {
-            document.getElementById('regPhotoPreview').src = '';
-            document.getElementById('regPhotoPreview').style.display = 'none';
-            localStorage.removeItem('tempRegPhoto');
+        function removerFotoEditar() {
+            document.getElementById('editPhotoPreview').src = '';
+            document.getElementById('editPhotoPreview').style.display = 'none';
+            localStorage.removeItem('tempEditPhoto');
         }
-
-        // ----------- FIM FOTO REGISTRO ------------
-
+        // Fecha modal ao clicar fora
+        window.addEventListener('click', function(event) {
+            const modal = document.getElementById('modalEditarPerfil');
+            if (event.target === modal) fecharModalEditarPerfil();
+        });
+        // Excluir perfil
+        const btnExcluirPerfil = document.getElementById('btnExcluirPerfil');
+        btnExcluirPerfil.addEventListener('click', function() {
+            const senha = prompt('Digite sua senha para confirmar a exclusão do perfil:');
+            if (!senha) return;
+            if (senha !== usuarioEditando.senha) {
+                alert('Senha incorreta.');
+                return;
+            }
+            let usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
+            usuarios = usuarios.filter(u => u !== usuarioEditando);
+            localStorage.setItem('usuarios', JSON.stringify(usuarios));
+            localStorage.removeItem('userphoto_' + usuarioEditando.usuario);
+            alert('Perfil excluído com sucesso!');
+            fecharModalEditarPerfil();
+        });
         // Gerenciamento de Inventário
         const equipmentForm = document.getElementById('equipmentForm');
         let hasUnsavedChanges = false;
@@ -869,6 +1039,91 @@
 
         // Inicialização
         document.getElementById('mainContainer').style.display = 'none';
+
+        // ----------- CÂMERA E FOTO NO REGISTRO ---------------
+let cameraStream = null;
+
+function abrirCamera() {
+    const video = document.getElementById('regCameraVideo');
+    const tirarFotoBtn = document.getElementById('tirarFotoBtn');
+    tirarFotoBtn.style.display = 'block';
+    video.style.display = 'block';
+    document.getElementById('regPhotoPreview').style.display = 'none';
+    // Para stream anterior, se houver
+    if (cameraStream) {
+        cameraStream.getTracks().forEach(track => track.stop());
+        cameraStream = null;
+    }
+    navigator.mediaDevices.getUserMedia({ video: true })
+        .then(function(stream) {
+            cameraStream = stream;
+            video.srcObject = stream;
+            video.play();
+            tirarFotoBtn.disabled = false;
+        })
+        .catch(function(err) {
+            tirarFotoBtn.disabled = true;
+            alert('Não foi possível acessar a câmera: ' + err);
+            fecharCamera();
+        });
+}
+
+function tirarFoto() {
+    const video = document.getElementById('regCameraVideo');
+    const tirarFotoBtn = document.getElementById('tirarFotoBtn');
+    if (!video.srcObject) {
+        alert('Câmera não iniciada.');
+        return;
+    }
+    const canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth || 240;
+    canvas.height = video.videoHeight || 240;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    const dataURL = canvas.toDataURL('image/png');
+    mostrarFotoPreview(dataURL);
+    fecharCamera();
+    localStorage.setItem('tempRegPhoto', dataURL);
+}
+
+function fecharCamera() {
+    const video = document.getElementById('regCameraVideo');
+    const tirarFotoBtn = document.getElementById('tirarFotoBtn');
+    video.style.display = 'none';
+    tirarFotoBtn.style.display = 'none';
+    if (cameraStream) {
+        cameraStream.getTracks().forEach(track => track.stop());
+        cameraStream = null;
+    }
+    video.srcObject = null;
+}
+
+function uploadFoto(event) {
+    const file = event.target.files[0];
+    if (file && file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            mostrarFotoPreview(e.target.result);
+            localStorage.setItem('tempRegPhoto', e.target.result);
+        }
+        reader.readAsDataURL(file);
+    }
+    event.target.value = "";
+}
+
+function mostrarFotoPreview(dataURL) {
+    const preview = document.getElementById('regPhotoPreview');
+    preview.src = dataURL;
+    preview.style.display = '';
+}
+
+function removerFoto() {
+    document.getElementById('regPhotoPreview').src = '';
+    document.getElementById('regPhotoPreview').style.display = 'none';
+    localStorage.removeItem('tempRegPhoto');
+}
+// ----------- FIM FOTO REGISTRO ------------
+
     </script>
 </body>
 </html>

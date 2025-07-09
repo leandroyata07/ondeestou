@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Onde Estou? - Sistema Completo</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-       <style>
+    <style>
+        /* ... estilos existentes ... */
         * {
             margin: 0;
             padding: 0;
@@ -183,17 +184,73 @@
             background: #e74c3c;
         }
 
+        /* Modal styles */
+        .modal-itens {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0; top: 0; width: 100vw; height: 100vh;
+            background: rgba(30, 60, 114, 0.65);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-itens.active {
+            display: flex;
+        }
+        .modal-content {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 6px 24px rgba(0,0,0,0.22);
+            padding: 2rem;
+            position: relative;
+            min-width: 60vw;
+            max-width: 96vw;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .close-modal {
+            position: absolute;
+            top: 18px;
+            right: 24px;
+            font-size: 2rem;
+            color: #e74c3c;
+            cursor: pointer;
+        }
+        .reg-photo-preview {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 50%;
+            margin: 0.5rem auto 0.5rem auto;
+            display: block;
+            border: 2px solid #1e3c72;
+            background: #f5f5f5;
+        }
+        .reg-photo-btns {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            justify-content: center;
+        }
+        .reg-photo-btns button {
+            min-width: 0;
+            padding: 0.5rem;
+            font-size: 0.95rem;
+        }
         @media (min-width: 768px) {
             .form-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
+        }
+        @media (max-width: 720px) {
+            .modal-content { min-width: 95vw; padding: 1rem; }
         }
     </style>
 </head>
 <body>
     <!-- Tela de Login -->
     <div class="login-container" id="loginContainer">
-        <h1>🔑 Onde Estou? 🤔</h1>
+        <h1>🔑 Onde Estou?</h1>
         <form id="loginForm">
             <div class="input-group">
                 <label><i class="fas fa-user"></i> Usuário</label>
@@ -230,6 +287,22 @@
                     <i class="fas fa-shield-alt"></i>
                 </div>
             </div>
+            <!-- NOVO CAMPO PARA FOTO -->
+            <div class="input-group">
+                <label><i class="fas fa-camera"></i> Foto do Usuário (opcional)</label>
+                <img id="regPhotoPreview" class="reg-photo-preview" src="" alt="Prévia da Foto" style="display:none;">
+                <div class="reg-photo-btns">
+                    <button type="button" onclick="abrirCamera()" title="Tirar Foto"><i class="fas fa-camera"></i></button>
+                    <button type="button" onclick="document.getElementById('regPhotoInput').click()" title="Fazer Upload"><i class="fas fa-upload"></i></button>
+                    <button type="button" onclick="removerFoto()" title="Remover Foto"><i class="fas fa-times"></i></button>
+                </div>
+                <input type="file" id="regPhotoInput" accept="image/*" style="display:none;" onchange="uploadFoto(event)">
+                <!-- Video para camera, só aparece durante captura -->
+                <video id="regCameraVideo" width="100%" height="160" autoplay playsinline style="display:none; border-radius:12px; border:1px solid #ccc;"></video>
+                <button type="button" id="tirarFotoBtn" onclick="tirarFoto()" style="display:none; margin: 0.5rem auto 0.2rem auto; width:100%; background:#1e3c72;">
+                  <i class="fas fa-camera-retro"></i> Capturar
+                </button>
+            </div>
             <button type="submit"><i class="fas fa-save"></i> Registrar</button>
             <div class="switch-form">
                 <a onclick="toggleRegister()"><i class="fas fa-sign-in-alt"></i> Já tem uma conta? Faça login</a>
@@ -239,7 +312,7 @@
 
     <!-- Interface Principal -->
     <div class="main-container" id="mainContainer">
-        <h1>📍 Cadastro de Itens 📍</h1>
+        <h1>📍 Controle de Patrimônio</h1>
         
         <form id="equipmentForm">
             <div class="form-grid">
@@ -327,7 +400,7 @@
             
             <div class="form-buttons">
                 <button type="submit"><i class="fas fa-check-circle"></i> Salvar Item</button>
-                <button type="button" class="btn-ver-itens" onclick="mostrarTodosItens()">
+                <button type="button" class="btn-ver-itens" onclick="abrirModalItens()">
                     <i class="fas fa-eye"></i> Ver Itens
                 </button>
                 <button class="btn-exportar" onclick="exportarPlanilhaCompleta()">
@@ -341,20 +414,27 @@
 
         <div class="export-notice" id="exportNotice"></div>
 
-        <table class="inventory-table">
-            <thead>
-                <tr>
-                    <th>Item</th>
-                    <th>Data</th>
-                    <th>Local</th>
-                    <th>Manutenção</th>
-                    <th>Categoria</th>
-                    <th>Valor</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody id="inventoryBody"></tbody>
-        </table>
+        <!-- Modal de visualização de itens -->
+        <div id="modalItens" class="modal-itens hidden">
+            <div class="modal-content">
+                <span class="close-modal" onclick="fecharModalItens()">&times;</span>
+                <h2>Itens Cadastrados</h2>
+                <table class="inventory-table">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Data</th>
+                            <th>Local</th>
+                            <th>Manutenção</th>
+                            <th>Categoria</th>
+                            <th>Valor</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="modalInventoryBody"></tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -365,6 +445,9 @@
         function toggleRegister() {
             document.getElementById('loginForm').classList.toggle('hidden');
             document.getElementById('registerForm').classList.toggle('hidden');
+            // Resetar e esconder câmera/upload ao alternar tela
+            fecharCamera();
+            removerFoto();
         }
 
         // Evento de login
@@ -376,13 +459,97 @@
         // Evento de registro (opcional)
         document.getElementById('registerForm').addEventListener('submit', function(e) {
             e.preventDefault();
+
+            // Salvar foto (se houver) no localStorage (por id do usuário)
+            const usuario = document.getElementById('newUser').value || "";
+            const fotoDataURL = localStorage.getItem('tempRegPhoto') || "";
+            if(usuario && fotoDataURL) {
+                localStorage.setItem('userphoto_' + usuario, fotoDataURL);
+                localStorage.removeItem('tempRegPhoto');
+            }
             alert('Funcionalidade de registro desativada. Clique em "Entrar" para acessar o sistema.');
             toggleRegister();
         });
 
+        // ----------- CÂMERA E FOTO NO REGISTRO ---------------
+        let cameraStream = null;
+
+        function abrirCamera() {
+            const video = document.getElementById('regCameraVideo');
+            const tirarFotoBtn = document.getElementById('tirarFotoBtn');
+            video.style.display = '';
+            tirarFotoBtn.style.display = '';
+            // Esconde preview se tinha
+            document.getElementById('regPhotoPreview').style.display = 'none';
+
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(function(stream) {
+                    cameraStream = stream;
+                    video.srcObject = stream;
+                })
+                .catch(function(err) {
+                    alert('Não foi possível acessar a câmera: ' + err);
+                    fecharCamera();
+                });
+        }
+
+        function tirarFoto() {
+            const video = document.getElementById('regCameraVideo');
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth || 240;
+            canvas.height = video.videoHeight || 240;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const dataURL = canvas.toDataURL('image/png');
+            mostrarFotoPreview(dataURL);
+            fecharCamera();
+            // Salva temporariamente até registro
+            localStorage.setItem('tempRegPhoto', dataURL);
+        }
+
+        function fecharCamera() {
+            const video = document.getElementById('regCameraVideo');
+            const tirarFotoBtn = document.getElementById('tirarFotoBtn');
+            video.style.display = 'none';
+            tirarFotoBtn.style.display = 'none';
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.stop());
+                cameraStream = null;
+            }
+            video.srcObject = null;
+        }
+
+        function uploadFoto(event) {
+            const file = event.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    mostrarFotoPreview(e.target.result);
+                    // Salva temporariamente até registro
+                    localStorage.setItem('tempRegPhoto', e.target.result);
+                }
+                reader.readAsDataURL(file);
+            }
+            // Limpa valor para permitir upload novamente se quiser
+            event.target.value = "";
+        }
+
+        function mostrarFotoPreview(dataURL) {
+            const preview = document.getElementById('regPhotoPreview');
+            preview.src = dataURL;
+            preview.style.display = '';
+        }
+
+        function removerFoto() {
+            document.getElementById('regPhotoPreview').src = '';
+            document.getElementById('regPhotoPreview').style.display = 'none';
+            localStorage.removeItem('tempRegPhoto');
+        }
+
+        // ----------- FIM FOTO REGISTRO ------------
+
         // Gerenciamento de Inventário
         const equipmentForm = document.getElementById('equipmentForm');
-        const inventoryBody = document.getElementById('inventoryBody');
         let hasUnsavedChanges = false;
 
         equipmentForm.addEventListener('submit', function(e) {
@@ -408,7 +575,6 @@
 
             localStorage.setItem('inventario', JSON.stringify(dados));
             equipmentForm.reset();
-            carregarDadosSalvos();
             hasUnsavedChanges = false;
             localStorage.removeItem('draft');
         });
@@ -460,40 +626,6 @@
             document.getElementById('loginContainer').style.display = 'none';
             document.getElementById('mainContainer').style.display = 'block';
             loadDraft();
-            carregarDadosSalvos();
-        }
-
-        // Função para carregar dados salvos
-        function carregarDadosSalvos() {
-            const dados = JSON.parse(localStorage.getItem('inventario')) || [];
-            inventoryBody.innerHTML = '';
-            
-            const dadosExibidos = mostrarTodos ? dados : dados.slice(-3);
-            
-            dadosExibidos.forEach((entry, index) => {
-                addToTable(entry, index);
-            });
-        }
-
-        // Função para adicionar item à tabela
-        function addToTable(entry, index) {
-            const newRow = document.createElement('tr');
-            newRow.setAttribute('data-index', index);
-            newRow.innerHTML = `
-                <td>${entry.item}</td>
-                <td>${entry.date}</td>
-                <td>${entry.location}</td>
-                <td>${entry.maintenance}</td>
-                <td>${entry.category}</td>
-                <td>R$ ${parseFloat(entry.value).toFixed(2)}</td>
-                <td>
-                    <div class="action-buttons">
-                        <button class="btn-editar" onclick="editarItem(${index})"><i class="fas fa-edit"></i></button>
-                        <button class="btn-excluir" onclick="excluirItem(${index})"><i class="fas fa-trash"></i></button>
-                    </div>
-                </td>
-            `;
-            inventoryBody.appendChild(newRow);
         }
 
         // Função para excluir item
@@ -502,7 +634,6 @@
                 const dados = JSON.parse(localStorage.getItem('inventario')) || [];
                 dados.splice(index, 1);
                 localStorage.setItem('inventario', JSON.stringify(dados));
-                carregarDadosSalvos();
             }
         }
 
@@ -595,10 +726,55 @@
             setTimeout(() => notice.style.display = 'none', 2000);
         }
 
-        // Função para mostrar todos os itens
-        function mostrarTodosItens() {
-            mostrarTodos = !mostrarTodos; // Alterna entre mostrar todos e mostrar apenas os últimos 3
-            carregarDadosSalvos();
+        // Função para abrir o modal e carregar os itens
+        function abrirModalItens() {
+            document.getElementById('modalItens').classList.add('active');
+            document.getElementById('modalItens').classList.remove('hidden');
+            carregarItensModal();
+        }
+
+        // Função para fechar o modal
+        function fecharModalItens() {
+            document.getElementById('modalItens').classList.remove('active');
+            document.getElementById('modalItens').classList.add('hidden');
+        }
+
+        // Carregar itens no modal
+        function carregarItensModal() {
+            const dados = JSON.parse(localStorage.getItem('inventario')) || [];
+            const modalInventoryBody = document.getElementById('modalInventoryBody');
+            modalInventoryBody.innerHTML = '';
+            dados.forEach((entry, index) => {
+                const newRow = document.createElement('tr');
+                newRow.setAttribute('data-index', index);
+                newRow.innerHTML = `
+                    <td>${entry.item}</td>
+                    <td>${entry.date}</td>
+                    <td>${entry.location}</td>
+                    <td>${entry.maintenance}</td>
+                    <td>${entry.category}</td>
+                    <td>R$ ${parseFloat(entry.value).toFixed(2)}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn-editar" onclick="editarItem(${index}); fecharModalItens();"><i class="fas fa-edit"></i></button>
+                            <button class="btn-excluir" onclick="excluirItemModal(${index});"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </td>
+                `;
+                modalInventoryBody.appendChild(newRow);
+            });
+        }
+
+        // Função específica para exclusão via modal (atualiza o modal após excluir)
+        function excluirItemModal(index) {
+            excluirItem(index);
+            carregarItensModal();
+        }
+
+        // Fechar modal ao clicar fora do conteúdo
+        window.onclick = function(event) {
+            const modal = document.getElementById('modalItens');
+            if (event.target === modal) fecharModalItens();
         }
 
         // Inicialização

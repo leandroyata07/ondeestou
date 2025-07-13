@@ -1,0 +1,1309 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Onde Estou? - Sistema Completo</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        /* ... estilos existentes ... */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .login-container, .main-container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 800px;
+            margin: 1rem auto;
+            transition: 0.3s;
+        }
+
+        .login-container {
+            max-width: 400px;
+        }
+
+        .main-container {
+            display: none;
+            position: relative;
+            min-height: 90vh;
+        }
+
+        h1 {
+            color: #1e3c72;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+        }
+
+        .form-grid {
+            display: grid;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group {
+            margin-bottom: 1rem;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.3rem;
+            color: #333;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .input-icon {
+            position: relative;
+        }
+
+        .input-icon i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+            z-index: 1;
+            transition: color 0.3s;
+            font-size: 1.1rem;
+        }
+
+        .input-icon input,
+        .input-icon select,
+        .input-icon textarea {
+            width: 100%;
+            padding: 0.8rem 0.8rem 0.8rem 40px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: 0.3s;
+        }
+
+        button {
+            background: #1e3c72;
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: 0.3s;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        button:hover {
+            background: #2a5298;
+            transform: translateY(-2px);
+        }
+
+        .inventory-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1.5rem;
+            overflow-x: auto;
+            display: block;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .export-notice {
+            color: #2ecc71;
+            text-align: center;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .btn-editar {
+            background: #f1c40f;
+            padding: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .btn-excluir {
+            background: #e74c3c;
+            padding: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .form-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .form-buttons button {
+            flex: 1;
+            min-width: 150px;
+            padding: 1rem;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-ver-itens {
+            background: #9b59b6;
+        }
+
+        .btn-exportar {
+            background: #2ecc71;
+        }
+
+        .btn-sair {
+            background: #e74c3c;
+        }
+
+        /* Modal styles */
+        .modal-itens {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0; top: 0; width: 100vw; height: 100vh;
+            background: rgba(30, 60, 114, 0.65);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-itens.active {
+            display: flex;
+        }
+        .modal-content {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 6px 24px rgba(0,0,0,0.22);
+            padding: 2rem;
+            position: relative;
+            min-width: 60vw;
+            max-width: 96vw;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .close-modal {
+            position: absolute;
+            top: 18px;
+            right: 24px;
+            font-size: 2rem;
+            color: #e74c3c;
+            cursor: pointer;
+        }
+        .reg-photo-preview {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 50%;
+            margin: 0.5rem auto 0.5rem auto;
+            display: block;
+            border: 2px solid #1e3c72;
+            background: #f5f5f5;
+        }
+        .reg-photo-btns {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            justify-content: center;
+        }
+        .reg-photo-btns button {
+            min-width: 0;
+            padding: 0.5rem;
+            font-size: 0.95rem;
+        }
+        @media (min-width: 768px) {
+            .form-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        @media (max-width: 720px) {
+            .modal-content { min-width: 95vw; padding: 1rem; }
+        }
+
+        .main-header-fixed {
+            position: sticky;
+            top: 0;
+            background: #f7f8fa;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+            padding: 1.2rem 1.2rem 1.2rem 1.2rem;
+            border-radius: 15px 15px 0 0;
+            box-shadow: 0 2px 8px rgba(30,60,114,0.07);
+            min-height: 70px;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+        }
+        .user-photo-header {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #1e3c72;
+            background: #f5f5f5;
+            box-shadow: 0 1px 4px rgba(30,60,114,0.10);
+        }
+        .user-name-header {
+            font-weight: bold;
+            color: #1e3c72;
+            font-size: 1.15rem;
+            letter-spacing: 0.5px;
+        }
+        .main-header-fixed h1 {
+            margin: 0;
+            font-size: 1.7rem;
+            color: #1e3c72;
+            flex: 1;
+            text-align: left;
+        }
+        .form-buttons-fixed {
+            position: sticky;
+            bottom: 0;
+            background: #f7f8fa;
+            border-radius: 0 0 15px 15px;
+            box-shadow: 0 -2px 8px rgba(30,60,114,0.07);
+            padding: 1.2rem 1.2rem 1.2rem 1.2rem;
+            z-index: 10;
+            margin-bottom: 0;
+        }
+        @media (max-width: 720px) {
+            .main-header-fixed, .form-buttons-fixed { padding: 0.7rem; }
+            .user-photo-header { width: 36px; height: 36px; }
+            .main-header-fixed h1 { font-size: 1.1rem; }
+        }
+
+        /* Fade + Scale transitions */
+        .fade-in {
+            opacity: 0;
+            transform: scale(0.98);
+            animation: fadeScaleIn 0.4s cubic-bezier(.4,0,.2,1) forwards;
+        }
+        .fade-out {
+            opacity: 1;
+            transform: scale(1);
+            animation: fadeScaleOut 0.4s cubic-bezier(.4,0,.2,1) forwards;
+        }
+        @keyframes fadeScaleIn {
+            from { opacity: 0; transform: scale(0.98); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        @keyframes fadeScaleOut {
+            from { opacity: 1; transform: scale(1); }
+            to { opacity: 0; transform: scale(1.02); }
+        }
+
+        .welcome-container {
+            background: rgba(255,255,255,0.97);
+            padding: 2.5rem 2rem;
+            border-radius: 18px;
+            box-shadow: 0 8px 32px rgba(30,60,114,0.18);
+            max-width: 420px;
+            margin: 2rem auto;
+            text-align: center;
+            display: block;
+            position: relative;
+            animation: fadeScaleIn 0.7s cubic-bezier(.4,0,.2,1);
+        }
+        .welcome-icon {
+            font-size: 3.5rem;
+            color: #1e3c72;
+            margin-bottom: 1.2rem;
+            animation: bounceIn 0.7s;
+        }
+        @keyframes bounceIn {
+            0% { transform: scale(0.7); opacity: 0; }
+            60% { transform: scale(1.15); opacity: 1; }
+            80% { transform: scale(0.95); }
+            100% { transform: scale(1); }
+        }
+        .welcome-title {
+            font-size: 2.1rem;
+            font-weight: bold;
+            color: #1e3c72;
+            margin-bottom: 0.7rem;
+            letter-spacing: 1px;
+        }
+        .welcome-desc {
+            font-size: 1.1rem;
+            color: #2a5298;
+            margin-bottom: 2.2rem;
+            line-height: 1.5;
+        }
+        .welcome-btn {
+            background: linear-gradient(90deg, #1e3c72 60%, #2a5298 100%);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.15rem;
+            font-weight: 500;
+            padding: 1rem 2.2rem;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(30,60,114,0.10);
+            transition: background 0.3s, transform 0.2s;
+            margin-top: 0.5rem;
+        }
+        .welcome-btn:hover {
+            background: linear-gradient(90deg, #2a5298 60%, #1e3c72 100%);
+            transform: translateY(-2px) scale(1.04);
+        }
+    </style>
+</head>
+<body>
+    <div class="welcome-container" id="welcomeContainer">
+        <!-- Logo imagem fornecida, agora buscada na pasta imagens -->
+        <div class="welcome-icon" style="margin-bottom:1.5rem; display:flex; justify-content:center; align-items:center;">
+            <img src="imagens/logo2.png" alt="Logo Onde Estou" style="max-width:200px; width:100%; height:auto; background:transparent;" />
+        </div>
+        <div class="welcome-title">Bem-vindo</div>
+        <div class="welcome-desc" style="margin-bottom:2.2rem;">
+            <span style="display:flex; align-items:center; justify-content:center; gap:0.5rem; margin-bottom:0.5rem;">
+                <i class="fas fa-box-open" style="color:#2a5298;"></i> Controle de Inventário
+            </span>
+        </div>
+        <button class="welcome-btn" onclick="irParaLogin()"><i class="fas fa-sign-in-alt"></i> Entrar</button>
+    </div>
+    <!-- Tela de Login -->
+    <div class="login-container" id="loginContainer" style="display:none;">
+        <h1>🔑 Onde Estou?</h1>
+        <form id="loginForm">
+            <div class="input-group">
+                <label><i class="fas fa-envelope"></i> E-mail</label>
+                <div class="input-icon">
+                    <input type="email" id="loginEmail" placeholder="E-mail" required>
+                    <i class="fas fa-envelope"></i>
+                </div>
+            </div>
+            <div class="input-group">
+                <label><i class="fas fa-user"></i> Usuário</label>
+                <div class="input-icon">
+                    <input type="text" id="username" placeholder="Opcional">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+            </div>
+            <div class="input-group">
+                <label><i class="fas fa-lock"></i> Senha</label>
+                <div class="input-icon">
+                    <input type="password" id="password" placeholder="Opcional">
+                    <i class="fas fa-key"></i>
+                </div>
+            </div>
+            <button type="submit"><i class="fas fa-sign-in-alt"></i> Entrar</button>
+            <div class="switch-form">
+                <a onclick="toggleRegister()"><i class="fas fa-user-plus"></i> Criar nova conta</a>
+            </div>
+        </form>
+
+        <form id="registerForm" class="hidden">
+            <div class="input-group">
+                <label><i class="fas fa-user-edit"></i> Novo Usuário</label>
+                <div class="input-icon">
+                    <input type="text" id="newUser" placeholder="Nome de usuário" required>
+                    <i class="fas fa-users"></i>
+                </div>
+            </div>
+            <div class="input-group">
+                <label><i class="fas fa-envelope"></i> E-mail</label>
+                <div class="input-icon">
+                    <input type="email" id="newEmail" placeholder="E-mail" required>
+                    <i class="fas fa-envelope"></i>
+                </div>
+            </div>
+            <div class="input-group">
+                <label><i class="fas fa-lock"></i> Nova Senha</label>
+                <div class="input-icon">
+                    <input type="password" id="newPassword" placeholder="Senha" required>
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+            </div>
+            <div class="input-group">
+                <label><i class="fas fa-user-shield"></i> Tipo de Perfil</label>
+                <div class="input-icon">
+                    <select id="profileType" required>
+                        <option value="">Selecione</option>
+                        <option value="admin">Administrador</option>
+                        <option value="user">Usuário Comum</option>
+                    </select>
+                    <i class="fas fa-user-tag"></i>
+                </div>
+            </div>
+            <!-- NOVO CAMPO PARA FOTO -->
+            <div class="input-group">
+                <label><i class="fas fa-camera"></i> Foto do Usuário (opcional)</label>
+                <img id="regPhotoPreview" class="reg-photo-preview" src="" alt="Prévia da Foto" style="display:none;">
+                <div class="reg-photo-btns">
+                    <button type="button" onclick="abrirCamera()" title="Tirar Foto"><i class="fas fa-camera"></i></button>
+                    <button type="button" onclick="document.getElementById('regPhotoInput').click()" title="Fazer Upload"><i class="fas fa-upload"></i></button>
+                    <button type="button" onclick="removerFoto()" title="Remover Foto"><i class="fas fa-times"></i></button>
+                </div>
+                <input type="file" id="regPhotoInput" accept="image/*" style="display:none;" onchange="uploadFoto(event)">
+                <!-- Video para camera, só aparece durante captura -->
+                <video id="regCameraVideo" width="100%" height="160" autoplay playsinline style="display:none; border-radius:12px; border:1px solid #ccc;"></video>
+                <button type="button" id="tirarFotoBtn" onclick="tirarFoto()" style="display:none; margin: 0.5rem auto 0.2rem auto; width:100%; background:#1e3c72;">
+                  <i class="fas fa-camera-retro"></i> Capturar
+                </button>
+            </div>
+            <button type="submit"><i class="fas fa-save"></i> Registrar</button>
+            <div class="switch-form">
+                <a onclick="toggleRegister()"><i class="fas fa-sign-in-alt"></i> Já tem uma conta? Faça login</a>
+            </div>
+        </form>
+        <!-- Modal Editar Perfil -->
+        <div id="modalEditarPerfil" class="modal-itens hidden">
+            <div class="modal-content" style="max-width:420px;">
+                <span class="close-modal" onclick="fecharModalEditarPerfil()">&times;</span>
+                <h2>Editar Perfil</h2>
+                <form id="formAutenticarPerfil">
+                    <div class="input-group">
+                        <label><i class="fas fa-user"></i> Nome de Usuário</label>
+                        <div class="input-icon">
+                            <input type="text" id="editNomeLogin" required placeholder="Nome de usuário">
+                            <i class="fas fa-user-circle"></i>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label><i class="fas fa-envelope"></i> E-mail</label>
+                        <div class="input-icon">
+                            <input type="email" id="editEmailLogin" required>
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label><i class="fas fa-lock"></i> Senha</label>
+                        <div class="input-icon">
+                            <input type="password" id="editSenhaLogin" required>
+                            <i class="fas fa-key"></i>
+                        </div>
+                    </div>
+                    <button type="submit"><i class="fas fa-sign-in-alt"></i> Autenticar</button>
+                </form>
+                <form id="formEditarPerfil" class="hidden">
+                    <div class="input-group">
+                        <label><i class="fas fa-user-edit"></i> Nome de Usuário</label>
+                        <div class="input-icon">
+                            <input type="text" id="editNome" required>
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label><i class="fas fa-envelope"></i> E-mail</label>
+                        <div class="input-icon">
+                            <input type="email" id="editEmail" required>
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label><i class="fas fa-lock"></i> Nova Senha</label>
+                        <div class="input-icon">
+                            <input type="password" id="editSenha" required>
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label><i class="fas fa-camera"></i> Foto do Usuário (opcional)</label>
+                        <img id="editPhotoPreview" class="reg-photo-preview" src="" alt="Prévia da Foto" style="display:none;">
+                        <div class="reg-photo-btns">
+                            <button type="button" onclick="abrirCameraEditar()" title="Tirar Foto"><i class="fas fa-camera"></i></button>
+                            <button type="button" onclick="document.getElementById('editPhotoInput').click()" title="Fazer Upload"><i class="fas fa-upload"></i></button>
+                            <button type="button" onclick="removerFotoEditar()" title="Remover Foto"><i class="fas fa-times"></i></button>
+                        </div>
+                        <input type="file" id="editPhotoInput" accept="image/*" style="display:none;" onchange="uploadFotoEditar(event)">
+                        <video id="editCameraVideo" width="100%" height="160" autoplay playsinline style="display:none; border-radius:12px; border:1px solid #ccc;"></video>
+                        <button type="button" id="tirarFotoBtnEditar" onclick="tirarFotoEditar()" style="display:none; margin: 0.5rem auto 0.2rem auto; width:100%; background:#1e3c72;">
+                          <i class="fas fa-camera-retro"></i> Capturar
+                        </button>
+                    </div>
+                    <button type="submit"><i class="fas fa-save"></i> Salvar Alterações</button>
+                    <button type="button" id="btnExcluirPerfil" style="background:#e74c3c; margin-top:0.7rem;"><i class="fas fa-user-times"></i> Excluir Perfil</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Interface Principal -->
+    <div class="main-container" id="mainContainer">
+        <div class="main-header-fixed">
+            <div class="user-info">
+                <img id="userPhotoHeader" class="user-photo-header" src="" alt="Foto do Usuário" style="display:none;">
+                <span id="userNameHeader" class="user-name-header"></span>
+            </div>
+            <h1>🔑 Onde Estou?</h1>
+        </div>
+        <form id="equipmentForm">
+            <div class="form-grid">
+                <div class="input-group">
+                    <label><i class="fas fa-box"></i> Nome do Item</label>
+                    <div class="input-icon">
+                        <input type="text" id="itemName" required>
+                        <i class="fas fa-tag"></i>
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <label><i class="fas fa-calendar"></i> Data de Cadastro</label>
+                    <div class="input-icon">
+                        <input type="date" id="registrationDate" required>
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <label><i class="fas fa-map-marker"></i> Local</label>
+                    <div class="input-icon">
+                        <input type="text" id="location" required>
+                        <i class="fas fa-location-arrow"></i>
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <label><i class="fas fa-tools"></i> Última Manutenção</label>
+                    <div class="input-icon">
+                        <input type="date" id="lastMaintenance" required>
+                        <i class="fas fa-wrench"></i>
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <label><i class="fas fa-folder"></i> Categoria</label>
+                    <div class="input-icon">
+                        <select id="category" required>
+                            <option value="">Selecione</option>
+                            <option>Hardware</option>
+                            <option>Periférico</option>
+                            <option>Rede</option>
+                            <option>Armazenamento</option>
+                        </select>
+                        <i class="fas fa-list"></i>
+                    </div>
+                    <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+                        <button type="button" onclick="adicionarCategoria()" style="padding: 0.5rem;">
+                            <i class="fas fa-plus"></i> Adicionar
+                        </button>
+                        <button type="button" onclick="editarCategoria()" style="padding: 0.5rem;">
+                            <i class="fas fa-edit"></i> Editar
+                        </button>
+                        <button type="button" onclick="excluirCategoria()" style="padding: 0.5rem;">
+                            <i class="fas fa-trash"></i> Excluir
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <label><i class="fas fa-shopping-cart"></i> Origem da Compra</label>
+                    <div class="input-icon">
+                        <input type="text" id="purchaseOrigin" required>
+                        <i class="fas fa-store"></i>
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <label><i class="fas fa-dollar-sign"></i> Valor (R$)</label>
+                    <div class="input-icon">
+                        <input type="number" step="0.01" id="value" required>
+                        <i class="fas fa-money-bill-wave"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="input-group">
+                <label><i class="fas fa-comment"></i> Observações</label>
+                <div class="input-icon">
+                    <textarea id="observations" rows="3"></textarea>
+                    <i class="fas fa-edit"></i>
+                </div>
+            </div>
+            <div class="form-buttons form-buttons-fixed">
+                <button type="submit"><i class="fas fa-check-circle"></i> Salvar Item</button>
+                <button type="button" class="btn-ver-itens" onclick="abrirModalItens()">
+                    <i class="fas fa-eye"></i> Ver Itens
+                </button>
+                <button class="btn-exportar" onclick="exportarPlanilhaCompleta()">
+                    <i class="fas fa-file-excel"></i> Gerar Planilha
+                </button>
+                <button class="btn-sair" onclick="handleSair()">
+                    <i class="fas fa-door-open"></i> Sair
+                </button>
+            </div>
+        </form>
+        <div class="export-notice" id="exportNotice"></div>
+
+        <!-- Modal de visualização de itens -->
+        <div id="modalItens" class="modal-itens hidden">
+            <div class="modal-content">
+                <span class="close-modal" onclick="fecharModalItens()">&times;</span>
+                <h2>Itens Cadastrados</h2>
+                <table class="inventory-table">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Data</th>
+                            <th>Local</th>
+                            <th>Manutenção</th>
+                            <th>Categoria</th>
+                            <th>Valor</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="modalInventoryBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Controle de Login
+        let editIndex = null;
+        let mostrarTodos = false;
+
+        function fadeTransition(hideEl, showEl) {
+            hideEl.classList.remove('fade-in');
+            hideEl.classList.add('fade-out');
+            showEl.style.display = '';
+            showEl.classList.add('fade-in');
+            setTimeout(() => {
+                hideEl.style.display = 'none';
+                hideEl.classList.remove('fade-out');
+                showEl.classList.remove('fade-in');
+            }, 400);
+        }
+
+        function toggleRegister() {
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            if (!registerForm.classList.contains('hidden')) {
+                fadeTransition(registerForm, loginForm);
+            } else {
+                fadeTransition(loginForm, registerForm);
+            }
+            loginForm.classList.toggle('hidden');
+            registerForm.classList.toggle('hidden');
+            fecharCamera();
+            removerFoto();
+        }
+
+        // Evento de login
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+            const username = document.getElementById('username').value.trim();
+            const senha = document.getElementById('password').value;
+            let usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
+            // Verifica se existe cadastro correspondente
+            const usuario = usuarios.find(u => u.usuario === username && u.email === email && u.senha === senha);
+            if (!usuario) {
+                alert('Usuário não cadastrado ou dados incorretos. Faça o cadastro antes de acessar.');
+                return;
+            }
+            showMainInterface();
+        });
+
+        // Adiciona botão Editar Perfil na tela de login
+        const loginForm = document.getElementById('loginForm');
+        const editarPerfilBtn = document.createElement('button');
+        editarPerfilBtn.type = 'button';
+        editarPerfilBtn.innerHTML = '<i class="fas fa-user-cog"></i> Editar Perfil';
+        editarPerfilBtn.style.marginTop = '0.7rem';
+        editarPerfilBtn.onclick = function() { abrirModalEditarPerfil(); };
+        loginForm.appendChild(editarPerfilBtn);
+
+        // Validação e registro com e-mail obrigatório
+        const registerForm = document.getElementById('registerForm');
+        registerForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const usuario = document.getElementById('newUser').value.trim();
+            const email = document.getElementById('newEmail').value.trim().toLowerCase();
+            const senha = document.getElementById('newPassword').value;
+            const fotoDataURL = localStorage.getItem('tempRegPhoto') || "";
+            const tipoPerfil = document.getElementById('profileType').value;
+            if (!usuario || !email || !senha || !tipoPerfil) {
+                alert('Preencha todos os campos obrigatórios.');
+                return;
+            }
+            if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+                alert('Digite um e-mail válido.');
+                return;
+            }
+            let usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
+            // Filtra perfis do mesmo e-mail
+            let perfisEmail = usuarios.filter(u => u.email === email);
+            // Regras de cadastro
+            if (perfisEmail.length === 0 && tipoPerfil !== 'admin') {
+                alert('O primeiro usuário cadastrado para este e-mail deve ser um Administrador.');
+                return;
+            }
+            if (perfisEmail.length >= 3) {
+                alert('Este e-mail já possui o máximo de 3 usuários cadastrados.');
+                return;
+            }
+            if (usuarios.some(u => u.usuario === usuario)) {
+                alert('Nome de usuário já existe. Escolha outro.');
+                return;
+            }
+            // Só pode haver um admin por e-mail
+            if (tipoPerfil === 'admin' && perfisEmail.some(u => u.tipoPerfil === 'admin')) {
+                alert('Este e-mail já possui um Administrador cadastrado.');
+                return;
+            }
+            usuarios.push({ usuario, email, senha, foto: fotoDataURL, tipoPerfil });
+            localStorage.setItem('usuarios', JSON.stringify(usuarios));
+            if (fotoDataURL) {
+                localStorage.setItem('userphoto_' + usuario, fotoDataURL);
+                localStorage.removeItem('tempRegPhoto');
+            }
+            alert('Usuário registrado com sucesso! Faça login.');
+            toggleRegister();
+        });
+
+        // Modal Editar Perfil
+        function abrirModalEditarPerfil() {
+            document.getElementById('modalEditarPerfil').classList.add('active');
+            document.getElementById('modalEditarPerfil').classList.remove('hidden');
+            document.getElementById('formAutenticarPerfil').classList.remove('hidden');
+            document.getElementById('formEditarPerfil').classList.add('hidden');
+            document.getElementById('formAutenticarPerfil').reset();
+            document.getElementById('formEditarPerfil').reset();
+            removerFotoEditar();
+        }
+        function fecharModalEditarPerfil() {
+            document.getElementById('modalEditarPerfil').classList.remove('active');
+            document.getElementById('modalEditarPerfil').classList.add('hidden');
+        }
+        // Autenticação para edição
+        let usuarioEditando = null;
+        document.getElementById('formAutenticarPerfil').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const nomeUsuario = document.getElementById('editNomeLogin').value.trim();
+            const email = document.getElementById('editEmailLogin').value.trim().toLowerCase();
+            const senha = document.getElementById('editSenhaLogin').value;
+            let usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
+            const usuario = usuarios.find(u => u.usuario === nomeUsuario && u.email === email && u.senha === senha);
+            if (!usuario) {
+                alert('Nome, e-mail ou senha incorretos.');
+                return;
+            }
+            usuarioEditando = usuario;
+            document.getElementById('formAutenticarPerfil').classList.add('hidden');
+            document.getElementById('formEditarPerfil').classList.remove('hidden');
+            document.getElementById('editNome').value = usuario.usuario;
+            document.getElementById('editEmail').value = usuario.email;
+            document.getElementById('editSenha').value = usuario.senha;
+            if (usuario.foto) {
+                document.getElementById('editPhotoPreview').src = usuario.foto;
+                document.getElementById('editPhotoPreview').style.display = '';
+            } else {
+                removerFotoEditar();
+            }
+        });
+        // Salvar edição de perfil
+        const formEditarPerfil = document.getElementById('formEditarPerfil');
+        formEditarPerfil.addEventListener('submit', function(e) {
+            e.preventDefault();
+            let usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
+            const novoNome = document.getElementById('editNome').value.trim();
+            const novoEmail = document.getElementById('editEmail').value.trim().toLowerCase();
+            const novaSenha = document.getElementById('editSenha').value;
+            const novaFoto = localStorage.getItem('tempEditPhoto') || usuarioEditando.foto || '';
+            if (!novoNome || !novoEmail || !novaSenha) {
+                alert('Preencha todos os campos obrigatórios.');
+                return;
+            }
+            if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(novoEmail)) {
+                alert('Digite um e-mail válido.');
+                return;
+            }
+            // Verifica duplicidade de e-mail e nome (exceto o próprio)
+            if (usuarios.some(u => u.email === novoEmail && u !== usuarioEditando)) {
+                alert('E-mail já cadastrado. Use outro.');
+                return;
+            }
+            if (usuarios.some(u => u.usuario === novoNome && u !== usuarioEditando)) {
+                alert('Nome de usuário já existe. Escolha outro.');
+                return;
+            }
+            // Atualiza dados
+            usuarioEditando.usuario = novoNome;
+            usuarioEditando.email = novoEmail;
+            usuarioEditando.senha = novaSenha;
+            usuarioEditando.foto = novaFoto;
+            localStorage.setItem('usuarios', JSON.stringify(usuarios));
+            if (novaFoto) {
+                localStorage.setItem('userphoto_' + novoNome, novaFoto);
+                localStorage.removeItem('tempEditPhoto');
+            }
+            alert('Perfil atualizado com sucesso!');
+            fecharModalEditarPerfil();
+        });
+        // Foto editar perfil
+        let editCameraStream = null; // Stream global para edição de perfil
+        function abrirCameraEditar() {
+            const video = document.getElementById('editCameraVideo');
+            const tirarFotoBtn = document.getElementById('tirarFotoBtnEditar');
+            video.style.display = '';
+            tirarFotoBtn.style.display = '';
+            document.getElementById('editPhotoPreview').style.display = 'none';
+            // Para stream anterior, se houver
+            if (editCameraStream) {
+                editCameraStream.getTracks().forEach(track => track.stop());
+                editCameraStream = null;
+            }
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(function(stream) {
+                    editCameraStream = stream;
+                    video.srcObject = stream;
+                    video.play();
+                    tirarFotoBtn.disabled = false;
+                })
+                .catch(function(err) {
+                    tirarFotoBtn.disabled = true;
+                    let msg = 'Não foi possível acessar a câmera.';
+                    if (err && err.name === 'NotReadableError') {
+                        msg += '\nVerifique se a câmera está conectada, não está sendo usada por outro aplicativo ou aba, e se você concedeu permissão ao navegador.';
+                    } else if (err && err.name === 'NotAllowedError') {
+                        msg += '\nPermissão negada. Autorize o acesso à câmera no navegador.';
+                    } else if (err && err.name === 'NotFoundError') {
+                        msg += '\nNenhuma câmera foi encontrada no dispositivo.';
+                    } else if (err && err.message) {
+                        msg += '\n' + err.message;
+                    }
+                    alert(msg);
+                    fecharCameraEditar();
+                });
+        }
+        function tirarFotoEditar() {
+            const video = document.getElementById('editCameraVideo');
+            const tirarFotoBtn = document.getElementById('tirarFotoBtnEditar');
+            if (!video.srcObject) {
+                alert('Câmera não iniciada.');
+                return;
+            }
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth || 240;
+            canvas.height = video.videoHeight || 240;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const dataURL = canvas.toDataURL('image/png');
+            mostrarFotoPreviewEditar(dataURL);
+            fecharCameraEditar();
+            localStorage.setItem('tempEditPhoto', dataURL);
+        }
+        function fecharCameraEditar() {
+            const video = document.getElementById('editCameraVideo');
+            const tirarFotoBtn = document.getElementById('tirarFotoBtnEditar');
+            video.style.display = 'none';
+            tirarFotoBtn.style.display = 'none';
+            if (editCameraStream) {
+                editCameraStream.getTracks().forEach(track => track.stop());
+                editCameraStream = null;
+            }
+            video.srcObject = null;
+            tirarFotoBtn.disabled = false;
+        }
+        function uploadFotoEditar(event) {
+            const file = event.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    mostrarFotoPreviewEditar(e.target.result);
+                    localStorage.setItem('tempEditPhoto', e.target.result);
+                }
+                reader.readAsDataURL(file);
+            }
+            event.target.value = "";
+        }
+        function mostrarFotoPreviewEditar(dataURL) {
+            const preview = document.getElementById('editPhotoPreview');
+            preview.src = dataURL;
+            preview.style.display = '';
+        }
+        function removerFotoEditar() {
+            document.getElementById('editPhotoPreview').src = '';
+            document.getElementById('editPhotoPreview').style.display = 'none';
+            localStorage.removeItem('tempEditPhoto');
+        }
+        // Fecha modal ao clicar fora
+        window.addEventListener('click', function(event) {
+            const modal = document.getElementById('modalEditarPerfil');
+            if (event.target === modal) fecharModalEditarPerfil();
+        });
+        // Excluir perfil
+        const btnExcluirPerfil = document.getElementById('btnExcluirPerfil');
+        btnExcluirPerfil.addEventListener('click', function() {
+            const senha = prompt('Digite sua senha para confirmar a exclusão do perfil:');
+            if (!senha) return;
+            if (senha !== usuarioEditando.senha) {
+                alert('Senha incorreta.');
+                return;
+            }
+            let usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
+            // Remove o usuário pelo nome, e-mail e tipo de perfil
+            usuarios = usuarios.filter(u => !(u.usuario === usuarioEditando.usuario && u.email === usuarioEditando.email && u.tipoPerfil === usuarioEditando.tipoPerfil));
+            localStorage.setItem('usuarios', JSON.stringify(usuarios));
+            localStorage.removeItem('userphoto_' + usuarioEditando.usuario);
+            alert('Perfil excluído com sucesso!');
+            fecharModalEditarPerfil();
+            usuarioEditando = null;
+        });
+        // Gerenciamento de Inventário
+        const equipmentForm = document.getElementById('equipmentForm');
+        let hasUnsavedChanges = false;
+
+        equipmentForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const dados = JSON.parse(localStorage.getItem('inventario')) || [];
+            const newEntry = {
+                item: document.getElementById('itemName').value,
+                date: document.getElementById('registrationDate').value,
+                location: document.getElementById('location').value,
+                maintenance: document.getElementById('lastMaintenance').value,
+                category: document.getElementById('category').value,
+                value: document.getElementById('value').value,
+                observations: document.getElementById('observations').value
+            };
+
+            if(editIndex !== null) {
+                dados[editIndex] = newEntry;
+                editIndex = null;
+            } else {
+                dados.push(newEntry);
+            }
+
+            localStorage.setItem('inventario', JSON.stringify(dados));
+            equipmentForm.reset();
+            hasUnsavedChanges = false;
+            localStorage.removeItem('draft');
+        });
+
+        // Função para adicionar categoria
+        function adicionarCategoria() {
+            const novaCategoria = prompt('Digite o nome da nova categoria:');
+            if (novaCategoria) {
+                const select = document.getElementById('category');
+                const option = document.createElement('option');
+                option.value = novaCategoria;
+                option.text = novaCategoria;
+                select.add(option);
+            }
+        }
+
+        // Função para editar categoria
+        function editarCategoria() {
+            const select = document.getElementById('category');
+            const selectedIndex = select.selectedIndex;
+            if (selectedIndex === 0) {
+                alert('Selecione uma categoria para editar.');
+                return;
+            }
+
+            const novoNome = prompt('Digite o novo nome da categoria:');
+            if (novoNome) {
+                select.options[selectedIndex].text = novoNome;
+                select.options[selectedIndex].value = novoNome;
+            }
+        }
+
+        // Função para excluir categoria
+        function excluirCategoria() {
+            const select = document.getElementById('category');
+            const selectedIndex = select.selectedIndex;
+            if (selectedIndex === 0) {
+                alert('Selecione uma categoria para excluir.');
+                return;
+            }
+
+            if (confirm(`Deseja realmente excluir a categoria "${select.options[selectedIndex].text}"?`)) {
+                select.remove(selectedIndex);
+            }
+        }
+
+        // Função para mostrar a interface principal
+        function showMainInterface() {
+            const loginContainer = document.getElementById('loginContainer');
+            const mainContainer = document.getElementById('mainContainer');
+            fadeTransition(loginContainer, mainContainer);
+            loadDraft();
+            // Exibir nome, foto e tipo de perfil do usuário logado
+            const username = document.getElementById('username').value;
+            let usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
+            let usuario = usuarios.find(u => u.usuario === username);
+            document.getElementById('userNameHeader').textContent = username || '';
+            const foto = usuario && usuario.foto ? usuario.foto : '';
+            const fotoEl = document.getElementById('userPhotoHeader');
+            if (foto) {
+                fotoEl.src = foto;
+                fotoEl.style.display = '';
+            } else {
+                fotoEl.src = '';
+                fotoEl.style.display = 'none';
+            }
+            // Exibe tipo de perfil no header (opcional)
+            if (usuario && usuario.tipoPerfil) {
+                document.getElementById('userNameHeader').textContent += usuario.tipoPerfil === 'admin' ? ' (Administrador)' : ' (Usuário)';
+            }
+        }
+
+        // Função para sair do sistema
+        function handleSair() {
+            if (hasUnsavedChanges) {
+                const confirmSave = confirm('Deseja salvar o rascunho antes de sair?');
+                if (confirmSave) saveDraft();
+            }
+            const mainContainer = document.getElementById('mainContainer');
+            const loginContainer = document.getElementById('loginContainer');
+            fadeTransition(mainContainer, loginContainer);
+            equipmentForm.reset();
+            hasUnsavedChanges = false;
+        }
+
+        // Função para salvar rascunho
+        function saveDraft() {
+            const draft = {
+                item: document.getElementById('itemName').value,
+                date: document.getElementById('registrationDate').value,
+                location: document.getElementById('location').value,
+                maintenance: document.getElementById('lastMaintenance').value,
+                category: document.getElementById('category').value,
+                value: document.getElementById('value').value,
+                observations: document.getElementById('observations').value
+            };
+            localStorage.setItem('draft', JSON.stringify(draft));
+            alert('Rascunho salvo com sucesso!');
+        }
+
+        // Função para carregar rascunho
+        function loadDraft() {
+            const draft = JSON.parse(localStorage.getItem('draft'));
+            if (draft) {
+                document.getElementById('itemName').value = draft.item || '';
+                document.getElementById('registrationDate').value = draft.date || '';
+                document.getElementById('location').value = draft.location || '';
+                document.getElementById('lastMaintenance').value = draft.maintenance || '';
+                document.getElementById('category').value = draft.category || '';
+                document.getElementById('value').value = draft.value || '';
+                document.getElementById('observations').value = draft.observations || '';
+                hasUnsavedChanges = true;
+            }
+        }
+
+        // Função para exportar planilha
+        function exportarPlanilhaCompleta() {
+            const itens = JSON.parse(localStorage.getItem('inventario')) || [];
+            const csvItens = [
+                ['=== ITENS CADASTRADOS ==='],
+                ['Item;Data;Local;Manutenção;Categoria;Valor;Observações'],
+                ...itens.map(item => [
+                    item.item,
+                    item.date,
+                    item.location,
+                    item.maintenance,
+                    item.category,
+                    item.value,
+                    item.observations
+                ].join(';'))
+            ];
+
+            const csvContent = csvItens.join('\n');
+            const blob = new Blob(["\ufeff" + csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `Inventario_${new Date().toISOString().split('T')[0]}.csv`;
+            link.click();
+
+            const notice = document.getElementById('exportNotice');
+            notice.textContent = 'Planilha gerada com sucesso!';
+            notice.style.display = 'block';
+            setTimeout(() => notice.style.display = 'none', 2000);
+        }
+
+        // Função para abrir o modal e carregar os itens
+        function abrirModalItens() {
+            document.getElementById('modalItens').classList.add('active');
+            document.getElementById('modalItens').classList.remove('hidden');
+            carregarItensModal();
+        }
+
+        // Função para fechar o modal
+        function fecharModalItens() {
+            document.getElementById('modalItens').classList.remove('active');
+            document.getElementById('modalItens').classList.add('hidden');
+        }
+
+        // Carregar itens no modal
+        function carregarItensModal() {
+            const dados = JSON.parse(localStorage.getItem('inventario')) || [];
+            const modalInventoryBody = document.getElementById('modalInventoryBody');
+            modalInventoryBody.innerHTML = '';
+            dados.forEach((entry, index) => {
+                const newRow = document.createElement('tr');
+                newRow.setAttribute('data-index', index);
+                newRow.innerHTML = `
+                    <td>${entry.item}</td>
+                    <td>${entry.date}</td>
+                    <td>${entry.location}</td>
+                    <td>${entry.maintenance}</td>
+                    <td>${entry.category}</td>
+                    <td>R$ ${parseFloat(entry.value).toFixed(2)}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn-editar" onclick="editarItem(${index}); fecharModalItens();"><i class="fas fa-edit"></i></button>
+                            <button class="btn-excluir" onclick="excluirItemModal(${index});"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </td>
+                `;
+                modalInventoryBody.appendChild(newRow);
+            });
+        }
+
+        // Função específica para exclusão via modal (atualiza o modal após excluir)
+        function excluirItemModal(index) {
+            excluirItem(index);
+            carregarItensModal();
+        }
+
+        // Fechar modal ao clicar fora do conteúdo
+        window.onclick = function(event) {
+            const modal = document.getElementById('modalItens');
+            if (event.target === modal) fecharModalItens();
+        }
+
+        // ----------- FOTO NO REGISTRO (ABRIR APP DE CÂMERA) ---------------
+function abrirCamera() {
+    const video = document.getElementById('regCameraVideo');
+    const tirarFotoBtn = document.getElementById('tirarFotoBtn');
+    tirarFotoBtn.style.display = 'block';
+    video.style.display = 'block';
+    document.getElementById('regPhotoPreview').style.display = 'none';
+    // Para stream anterior, se houver
+    if (window.cameraStream) {
+        window.cameraStream.getTracks().forEach(track => track.stop());
+        window.cameraStream = null;
+    }
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        alert('Seu navegador não suporta acesso à câmera. Use o botão de upload para enviar uma foto.');
+        document.getElementById('regPhotoInput').style.display = 'block';
+        return;
+    }
+    navigator.mediaDevices.getUserMedia({ video: true })
+        .then(function(stream) {
+            window.cameraStream = stream;
+            video.srcObject = stream;
+            video.play();
+            tirarFotoBtn.disabled = false;
+            document.getElementById('regPhotoInput').style.display = 'none';
+            console.log('Câmera aberta com sucesso.');
+        })
+        .catch(function(err) {
+            tirarFotoBtn.disabled = true;
+            let msg = 'Não foi possível acessar a câmera.';
+            if (err && err.name === 'NotReadableError') {
+                msg += '\nVerifique se a câmera está conectada, não está sendo usada por outro aplicativo ou aba, e se você concedeu permissão ao navegador.';
+            } else if (err && err.name === 'NotAllowedError') {
+                msg += '\nPermissão negada. Autorize o acesso à câmera no navegador.';
+            } else if (err && err.name === 'NotFoundError') {
+                msg += '\nNenhuma câmera foi encontrada no dispositivo.';
+            } else if (err && err.message) {
+                msg += '\n' + err.message;
+            }
+            alert(msg + '\nComo alternativa, use o botão de upload para enviar uma foto.');
+            document.getElementById('regPhotoInput').style.display = 'block';
+            fecharCamera();
+            console.error('Erro ao abrir câmera:', err);
+        });
+}
+
+function tirarFoto() {
+    const video = document.getElementById('regCameraVideo');
+    const tirarFotoBtn = document.getElementById('tirarFotoBtn');
+    if (!video.srcObject) {
+        alert('Câmera não iniciada.');
+        return;
+    }
+    const canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth || 240;
+    canvas.height = video.videoHeight || 240;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    const dataURL = canvas.toDataURL('image/png');
+    mostrarFotoPreview(dataURL);
+    fecharCamera();
+    localStorage.setItem('tempRegPhoto', dataURL);
+}
+
+function fecharCamera() {
+    const video = document.getElementById('regCameraVideo');
+    const tirarFotoBtn = document.getElementById('tirarFotoBtn');
+    video.style.display = 'none';
+    tirarFotoBtn.style.display = 'none';
+    if (window.cameraStream) {
+        window.cameraStream.getTracks().forEach(track => track.stop());
+        window.cameraStream = null;
+    }
+    video.srcObject = null;
+}
+
+function uploadFoto(event) {
+    const file = event.target.files[0];
+    if (file && file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            mostrarFotoPreview(e.target.result);
+            localStorage.setItem('tempRegPhoto', e.target.result);
+        }
+        reader.readAsDataURL(file);
+    }
+    event.target.value = "";
+}
+
+function mostrarFotoPreview(dataURL) {
+    const preview = document.getElementById('regPhotoPreview');
+    preview.src = dataURL;
+    preview.style.display = '';
+}
+
+function removerFoto() {
+    document.getElementById('regPhotoPreview').src = '';
+    document.getElementById('regPhotoPreview').style.display = 'none';
+    localStorage.removeItem('tempRegPhoto');
+    document.getElementById('regPhotoInput').style.display = 'none';
+}
+// ----------- FIM FOTO REGISTRO ------------
+
+        function irParaLogin() {
+            const welcomeContainer = document.getElementById('welcomeContainer');
+            const loginContainer = document.getElementById('loginContainer');
+            // Remove hidden e garante display
+            loginContainer.classList.remove('hidden');
+            loginContainer.style.display = '';
+            welcomeContainer.style.display = 'none'; // Oculta imediatamente a tela de boas-vindas
+        }
+    </script>
+</body>
+</html>

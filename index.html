@@ -301,108 +301,25 @@
             .user-photo-header { width: 36px; height: 36px; }
             .main-header-fixed h1 { font-size: 1.1rem; }
         }
-
-        /* Fade + Scale transitions */
-        .fade-in {
-            opacity: 0;
-            transform: scale(0.98);
-            animation: fadeScaleIn 0.4s cubic-bezier(.4,0,.2,1) forwards;
-        }
-        .fade-out {
-            opacity: 1;
-            transform: scale(1);
-            animation: fadeScaleOut 0.4s cubic-bezier(.4,0,.2,1) forwards;
-        }
-        @keyframes fadeScaleIn {
-            from { opacity: 0; transform: scale(0.98); }
-            to { opacity: 1; transform: scale(1); }
-        }
-        @keyframes fadeScaleOut {
-            from { opacity: 1; transform: scale(1); }
-            to { opacity: 0; transform: scale(1.02); }
-        }
-
-        .welcome-container {
-            background: rgba(255,255,255,0.97);
-            padding: 2.5rem 2rem;
-            border-radius: 18px;
-            box-shadow: 0 8px 32px rgba(30,60,114,0.18);
-            max-width: 420px;
-            margin: 2rem auto;
-            text-align: center;
-            display: block;
-            position: relative;
-            animation: fadeScaleIn 0.7s cubic-bezier(.4,0,.2,1);
-        }
-        .welcome-icon {
-            font-size: 3.5rem;
-            color: #1e3c72;
-            margin-bottom: 1.2rem;
-            animation: bounceIn 0.7s;
-        }
-        @keyframes bounceIn {
-            0% { transform: scale(0.7); opacity: 0; }
-            60% { transform: scale(1.15); opacity: 1; }
-            80% { transform: scale(0.95); }
-            100% { transform: scale(1); }
-        }
-        .welcome-title {
-            font-size: 2.1rem;
-            font-weight: bold;
-            color: #1e3c72;
-            margin-bottom: 0.7rem;
-            letter-spacing: 1px;
-        }
-        .welcome-desc {
-            font-size: 1.1rem;
-            color: #2a5298;
-            margin-bottom: 2.2rem;
-            line-height: 1.5;
-        }
-        .welcome-btn {
-            background: linear-gradient(90deg, #1e3c72 60%, #2a5298 100%);
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            font-size: 1.15rem;
-            font-weight: 500;
-            padding: 1rem 2.2rem;
-            cursor: pointer;
-            box-shadow: 0 2px 8px rgba(30,60,114,0.10);
-            transition: background 0.3s, transform 0.2s;
-            margin-top: 0.5rem;
-        }
-        .welcome-btn:hover {
-            background: linear-gradient(90deg, #2a5298 60%, #1e3c72 100%);
-            transform: translateY(-2px) scale(1.04);
-        }
     </style>
 </head>
 <body>
-    <div class="welcome-container" id="welcomeContainer">
-        <!-- Logo imagem fornecida, agora buscada na pasta imagens -->
-        <div class="welcome-icon" style="margin-bottom:1.5rem; display:flex; justify-content:center; align-items:center;">
-            <img src="imagens/logo2.png" alt="Logo Onde Estou" style="max-width:200px; width:100%; height:auto; background:transparent;" />
+    <!-- Tela de Boas-Vindas -->
+    <div id="welcomeModal" class="modal-itens active" style="background: rgba(30, 60, 114, 0.65); justify-content: center; align-items: center;">
+        <div class="modal-content" style="max-width:400px; text-align:center; margin: auto; box-shadow: 0 5px 15px rgba(0,0,0,0.2); border-radius: 15px;">
+            <img src="imagens/logo2.png" alt="Logo Onde Estou" style="width:110px; height:110px; margin-bottom:1rem; border-radius:16px; box-shadow:0 2px 8px rgba(30,60,114,0.13); background:#fff;">
+            <h2 style="color:#1e3c72; margin-bottom:1rem;">Bem-vindo ao Onde Estou?</h2>
+            <p style="color:#333; margin-bottom:2rem;">Gerencie seus itens e perfil de forma simples e segura.</p>
+            <button id="welcomeEntrarBtn" style="background:#1e3c72; color:white; font-size:1.1rem; padding:0.8rem 2rem; border-radius:8px;">
+                <i class="fas fa-sign-in-alt"></i> Entrar
+            </button>
         </div>
-        <div class="welcome-title">Bem-vindo</div>
-        <div class="welcome-desc" style="margin-bottom:2.2rem;">
-            <span style="display:flex; align-items:center; justify-content:center; gap:0.5rem; margin-bottom:0.5rem;">
-                <i class="fas fa-box-open" style="color:#2a5298;"></i> Controle de Inventário
-            </span>
-        </div>
-        <button class="welcome-btn" onclick="irParaLogin()"><i class="fas fa-sign-in-alt"></i> Entrar</button>
     </div>
+
     <!-- Tela de Login -->
-    <div class="login-container" id="loginContainer" style="display:none;">
+    <div class="login-container" id="loginContainer">
         <h1>🔑 Onde Estou?</h1>
         <form id="loginForm">
-            <div class="input-group">
-                <label><i class="fas fa-envelope"></i> E-mail</label>
-                <div class="input-icon">
-                    <input type="email" id="loginEmail" placeholder="E-mail" required>
-                    <i class="fas fa-envelope"></i>
-                </div>
-            </div>
             <div class="input-group">
                 <label><i class="fas fa-user"></i> Usuário</label>
                 <div class="input-icon">
@@ -445,17 +362,6 @@
                     <i class="fas fa-shield-alt"></i>
                 </div>
             </div>
-            <div class="input-group">
-                <label><i class="fas fa-user-shield"></i> Tipo de Perfil</label>
-                <div class="input-icon">
-                    <select id="profileType" required>
-                        <option value="">Selecione</option>
-                        <option value="admin">Administrador</option>
-                        <option value="user">Usuário Comum</option>
-                    </select>
-                    <i class="fas fa-user-tag"></i>
-                </div>
-            </div>
             <!-- NOVO CAMPO PARA FOTO -->
             <div class="input-group">
                 <label><i class="fas fa-camera"></i> Foto do Usuário (opcional)</label>
@@ -483,13 +389,6 @@
                 <span class="close-modal" onclick="fecharModalEditarPerfil()">&times;</span>
                 <h2>Editar Perfil</h2>
                 <form id="formAutenticarPerfil">
-                    <div class="input-group">
-                        <label><i class="fas fa-user"></i> Nome de Usuário</label>
-                        <div class="input-icon">
-                            <input type="text" id="editNomeLogin" required placeholder="Nome de usuário">
-                            <i class="fas fa-user-circle"></i>
-                        </div>
-                    </div>
                     <div class="input-group">
                         <label><i class="fas fa-envelope"></i> E-mail</label>
                         <div class="input-icon">
@@ -683,28 +582,10 @@
         let editIndex = null;
         let mostrarTodos = false;
 
-        function fadeTransition(hideEl, showEl) {
-            hideEl.classList.remove('fade-in');
-            hideEl.classList.add('fade-out');
-            showEl.style.display = '';
-            showEl.classList.add('fade-in');
-            setTimeout(() => {
-                hideEl.style.display = 'none';
-                hideEl.classList.remove('fade-out');
-                showEl.classList.remove('fade-in');
-            }, 400);
-        }
-
         function toggleRegister() {
-            const loginForm = document.getElementById('loginForm');
-            const registerForm = document.getElementById('registerForm');
-            if (!registerForm.classList.contains('hidden')) {
-                fadeTransition(registerForm, loginForm);
-            } else {
-                fadeTransition(loginForm, registerForm);
-            }
-            loginForm.classList.toggle('hidden');
-            registerForm.classList.toggle('hidden');
+            document.getElementById('loginForm').classList.toggle('hidden');
+            document.getElementById('registerForm').classList.toggle('hidden');
+            // Resetar e esconder câmera/upload ao alternar tela
             fecharCamera();
             removerFoto();
         }
@@ -712,16 +593,6 @@
         // Evento de login
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            const email = document.getElementById('loginEmail').value.trim().toLowerCase();
-            const username = document.getElementById('username').value.trim();
-            const senha = document.getElementById('password').value;
-            let usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
-            // Verifica se existe cadastro correspondente
-            const usuario = usuarios.find(u => u.usuario === username && u.email === email && u.senha === senha);
-            if (!usuario) {
-                alert('Usuário não cadastrado ou dados incorretos. Faça o cadastro antes de acessar.');
-                return;
-            }
             showMainInterface();
         });
 
@@ -742,8 +613,7 @@
             const email = document.getElementById('newEmail').value.trim().toLowerCase();
             const senha = document.getElementById('newPassword').value;
             const fotoDataURL = localStorage.getItem('tempRegPhoto') || "";
-            const tipoPerfil = document.getElementById('profileType').value;
-            if (!usuario || !email || !senha || !tipoPerfil) {
+            if (!usuario || !email || !senha) {
                 alert('Preencha todos os campos obrigatórios.');
                 return;
             }
@@ -752,27 +622,15 @@
                 return;
             }
             let usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
-            // Filtra perfis do mesmo e-mail
-            let perfisEmail = usuarios.filter(u => u.email === email);
-            // Regras de cadastro
-            if (perfisEmail.length === 0 && tipoPerfil !== 'admin') {
-                alert('O primeiro usuário cadastrado para este e-mail deve ser um Administrador.');
-                return;
-            }
-            if (perfisEmail.length >= 3) {
-                alert('Este e-mail já possui o máximo de 3 usuários cadastrados.');
-                return;
-            }
             if (usuarios.some(u => u.usuario === usuario)) {
                 alert('Nome de usuário já existe. Escolha outro.');
                 return;
             }
-            // Só pode haver um admin por e-mail
-            if (tipoPerfil === 'admin' && perfisEmail.some(u => u.tipoPerfil === 'admin')) {
-                alert('Este e-mail já possui um Administrador cadastrado.');
+            if (usuarios.some(u => u.email === email)) {
+                alert('E-mail já cadastrado. Use outro.');
                 return;
             }
-            usuarios.push({ usuario, email, senha, foto: fotoDataURL, tipoPerfil });
+            usuarios.push({ usuario, email, senha, foto: fotoDataURL });
             localStorage.setItem('usuarios', JSON.stringify(usuarios));
             if (fotoDataURL) {
                 localStorage.setItem('userphoto_' + usuario, fotoDataURL);
@@ -800,13 +658,12 @@
         let usuarioEditando = null;
         document.getElementById('formAutenticarPerfil').addEventListener('submit', function(e) {
             e.preventDefault();
-            const nomeUsuario = document.getElementById('editNomeLogin').value.trim();
             const email = document.getElementById('editEmailLogin').value.trim().toLowerCase();
             const senha = document.getElementById('editSenhaLogin').value;
             let usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
-            const usuario = usuarios.find(u => u.usuario === nomeUsuario && u.email === email && u.senha === senha);
+            const usuario = usuarios.find(u => u.email === email && u.senha === senha);
             if (!usuario) {
-                alert('Nome, e-mail ou senha incorretos.');
+                alert('E-mail ou senha incorretos.');
                 return;
             }
             usuarioEditando = usuario;
@@ -862,48 +719,29 @@
             fecharModalEditarPerfil();
         });
         // Foto editar perfil
-        let editCameraStream = null; // Stream global para edição de perfil
         function abrirCameraEditar() {
             const video = document.getElementById('editCameraVideo');
             const tirarFotoBtn = document.getElementById('tirarFotoBtnEditar');
             video.style.display = '';
             tirarFotoBtn.style.display = '';
             document.getElementById('editPhotoPreview').style.display = 'none';
-            // Para stream anterior, se houver
-            if (editCameraStream) {
-                editCameraStream.getTracks().forEach(track => track.stop());
-                editCameraStream = null;
+            // Corrige: para evitar múltiplos streams, para o anterior
+            if (video._stream) {
+                video._stream.getTracks().forEach(track => track.stop());
+                video._stream = null;
             }
             navigator.mediaDevices.getUserMedia({ video: true })
                 .then(function(stream) {
-                    editCameraStream = stream;
                     video.srcObject = stream;
-                    video.play();
-                    tirarFotoBtn.disabled = false;
+                    video._stream = stream;
                 })
                 .catch(function(err) {
-                    tirarFotoBtn.disabled = true;
-                    let msg = 'Não foi possível acessar a câmera.';
-                    if (err && err.name === 'NotReadableError') {
-                        msg += '\nVerifique se a câmera está conectada, não está sendo usada por outro aplicativo ou aba, e se você concedeu permissão ao navegador.';
-                    } else if (err && err.name === 'NotAllowedError') {
-                        msg += '\nPermissão negada. Autorize o acesso à câmera no navegador.';
-                    } else if (err && err.name === 'NotFoundError') {
-                        msg += '\nNenhuma câmera foi encontrada no dispositivo.';
-                    } else if (err && err.message) {
-                        msg += '\n' + err.message;
-                    }
-                    alert(msg);
+                    alert('Não foi possível acessar a câmera: ' + err);
                     fecharCameraEditar();
                 });
         }
         function tirarFotoEditar() {
             const video = document.getElementById('editCameraVideo');
-            const tirarFotoBtn = document.getElementById('tirarFotoBtnEditar');
-            if (!video.srcObject) {
-                alert('Câmera não iniciada.');
-                return;
-            }
             const canvas = document.createElement('canvas');
             canvas.width = video.videoWidth || 240;
             canvas.height = video.videoHeight || 240;
@@ -919,12 +757,11 @@
             const tirarFotoBtn = document.getElementById('tirarFotoBtnEditar');
             video.style.display = 'none';
             tirarFotoBtn.style.display = 'none';
-            if (editCameraStream) {
-                editCameraStream.getTracks().forEach(track => track.stop());
-                editCameraStream = null;
+            if (video._stream) {
+                video._stream.getTracks().forEach(track => track.stop());
+                video._stream = null;
             }
             video.srcObject = null;
-            tirarFotoBtn.disabled = false;
         }
         function uploadFotoEditar(event) {
             const file = event.target.files[0];
@@ -963,13 +800,11 @@
                 return;
             }
             let usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
-            // Remove o usuário pelo nome, e-mail e tipo de perfil
-            usuarios = usuarios.filter(u => !(u.usuario === usuarioEditando.usuario && u.email === usuarioEditando.email && u.tipoPerfil === usuarioEditando.tipoPerfil));
+            usuarios = usuarios.filter(u => u !== usuarioEditando);
             localStorage.setItem('usuarios', JSON.stringify(usuarios));
             localStorage.removeItem('userphoto_' + usuarioEditando.usuario);
             alert('Perfil excluído com sucesso!');
             fecharModalEditarPerfil();
-            usuarioEditando = null;
         });
         // Gerenciamento de Inventário
         const equipmentForm = document.getElementById('equipmentForm');
@@ -1046,11 +881,10 @@
 
         // Função para mostrar a interface principal
         function showMainInterface() {
-            const loginContainer = document.getElementById('loginContainer');
-            const mainContainer = document.getElementById('mainContainer');
-            fadeTransition(loginContainer, mainContainer);
+            document.getElementById('loginContainer').style.display = 'none';
+            document.getElementById('mainContainer').style.display = 'block';
             loadDraft();
-            // Exibir nome, foto e tipo de perfil do usuário logado
+            // Exibir nome e foto do usuário logado
             const username = document.getElementById('username').value;
             let usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
             let usuario = usuarios.find(u => u.usuario === username);
@@ -1064,10 +898,32 @@
                 fotoEl.src = '';
                 fotoEl.style.display = 'none';
             }
-            // Exibe tipo de perfil no header (opcional)
-            if (usuario && usuario.tipoPerfil) {
-                document.getElementById('userNameHeader').textContent += usuario.tipoPerfil === 'admin' ? ' (Administrador)' : ' (Usuário)';
+        }
+
+        // Função para excluir item
+        function excluirItem(index) {
+            if(confirm('Deseja realmente excluir este item permanentemente?')) {
+                const dados = JSON.parse(localStorage.getItem('inventario')) || [];
+                dados.splice(index, 1);
+                localStorage.setItem('inventario', JSON.stringify(dados));
             }
+        }
+
+        // Função para editar item
+        function editarItem(index) {
+            const dados = JSON.parse(localStorage.getItem('inventario')) || [];
+            const item = dados[index];
+            
+            document.getElementById('itemName').value = item.item;
+            document.getElementById('registrationDate').value = item.date;
+            document.getElementById('location').value = item.location;
+            document.getElementById('lastMaintenance').value = item.maintenance;
+            document.getElementById('category').value = item.category;
+            document.getElementById('value').value = item.value;
+            document.getElementById('observations').value = item.observations;
+            
+            editIndex = index;
+            window.scrollTo(0, 0);
         }
 
         // Função para sair do sistema
@@ -1076,9 +932,8 @@
                 const confirmSave = confirm('Deseja salvar o rascunho antes de sair?');
                 if (confirmSave) saveDraft();
             }
-            const mainContainer = document.getElementById('mainContainer');
-            const loginContainer = document.getElementById('loginContainer');
-            fadeTransition(mainContainer, loginContainer);
+            document.getElementById('mainContainer').style.display = 'none';
+            document.getElementById('loginContainer').style.display = 'block';
             equipmentForm.reset();
             hasUnsavedChanges = false;
         }
@@ -1194,7 +1049,12 @@
             if (event.target === modal) fecharModalItens();
         }
 
-        // ----------- FOTO NO REGISTRO (ABRIR APP DE CÂMERA) ---------------
+        // Inicialização
+        document.getElementById('mainContainer').style.display = 'none';
+
+        // ----------- CÂMERA E FOTO NO REGISTRO ---------------
+let cameraStream = null;
+
 function abrirCamera() {
     const video = document.getElementById('regCameraVideo');
     const tirarFotoBtn = document.getElementById('tirarFotoBtn');
@@ -1202,40 +1062,21 @@ function abrirCamera() {
     video.style.display = 'block';
     document.getElementById('regPhotoPreview').style.display = 'none';
     // Para stream anterior, se houver
-    if (window.cameraStream) {
-        window.cameraStream.getTracks().forEach(track => track.stop());
-        window.cameraStream = null;
-    }
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        alert('Seu navegador não suporta acesso à câmera. Use o botão de upload para enviar uma foto.');
-        document.getElementById('regPhotoInput').style.display = 'block';
-        return;
+    if (cameraStream) {
+        cameraStream.getTracks().forEach(track => track.stop());
+        cameraStream = null;
     }
     navigator.mediaDevices.getUserMedia({ video: true })
         .then(function(stream) {
-            window.cameraStream = stream;
+            cameraStream = stream;
             video.srcObject = stream;
             video.play();
             tirarFotoBtn.disabled = false;
-            document.getElementById('regPhotoInput').style.display = 'none';
-            console.log('Câmera aberta com sucesso.');
         })
         .catch(function(err) {
             tirarFotoBtn.disabled = true;
-            let msg = 'Não foi possível acessar a câmera.';
-            if (err && err.name === 'NotReadableError') {
-                msg += '\nVerifique se a câmera está conectada, não está sendo usada por outro aplicativo ou aba, e se você concedeu permissão ao navegador.';
-            } else if (err && err.name === 'NotAllowedError') {
-                msg += '\nPermissão negada. Autorize o acesso à câmera no navegador.';
-            } else if (err && err.name === 'NotFoundError') {
-                msg += '\nNenhuma câmera foi encontrada no dispositivo.';
-            } else if (err && err.message) {
-                msg += '\n' + err.message;
-            }
-            alert(msg + '\nComo alternativa, use o botão de upload para enviar uma foto.');
-            document.getElementById('regPhotoInput').style.display = 'block';
+            alert('Não foi possível acessar a câmera: ' + err);
             fecharCamera();
-            console.error('Erro ao abrir câmera:', err);
         });
 }
 
@@ -1262,9 +1103,9 @@ function fecharCamera() {
     const tirarFotoBtn = document.getElementById('tirarFotoBtn');
     video.style.display = 'none';
     tirarFotoBtn.style.display = 'none';
-    if (window.cameraStream) {
-        window.cameraStream.getTracks().forEach(track => track.stop());
-        window.cameraStream = null;
+    if (cameraStream) {
+        cameraStream.getTracks().forEach(track => track.stop());
+        cameraStream = null;
     }
     video.srcObject = null;
 }
@@ -1292,17 +1133,28 @@ function removerFoto() {
     document.getElementById('regPhotoPreview').src = '';
     document.getElementById('regPhotoPreview').style.display = 'none';
     localStorage.removeItem('tempRegPhoto');
-    document.getElementById('regPhotoInput').style.display = 'none';
 }
 // ----------- FIM FOTO REGISTRO ------------
 
-        function irParaLogin() {
-            const welcomeContainer = document.getElementById('welcomeContainer');
-            const loginContainer = document.getElementById('loginContainer');
-            // Remove hidden e garante display
-            loginContainer.classList.remove('hidden');
-            loginContainer.style.display = '';
-            welcomeContainer.style.display = 'none'; // Oculta imediatamente a tela de boas-vindas
+        // Função para fechar o modal de boas-vindas e mostrar tela de login
+        function fecharWelcome() {
+            document.getElementById('welcomeModal').classList.remove('active');
+            document.getElementById('welcomeModal').classList.add('hidden');
+            document.getElementById('loginContainer').style.display = 'block';
+        }
+        // Corrige o botão Entrar da tela de apresentação
+        const welcomeEntrarBtn = document.getElementById('welcomeEntrarBtn');
+        if (welcomeEntrarBtn) {
+            welcomeEntrarBtn.onclick = fecharWelcome;
+        }
+
+        // Inicialização
+        // Garante que apenas a tela de boas-vindas apareça ao iniciar
+        window.onload = function() {
+            document.getElementById('welcomeModal').classList.add('active');
+            document.getElementById('welcomeModal').classList.remove('hidden');
+            document.getElementById('loginContainer').style.display = 'none';
+            document.getElementById('mainContainer').style.display = 'none';
         }
     </script>
 </body>

@@ -1,1161 +1,2520 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Onde Estou? - Sistema Completo</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <title>Onde Estou? - Controle de Inventário</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        /* ... estilos existentes ... */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', sans-serif;
+        /* Nova Paleta de Cores */
+        :root {
+            --color-primary-dark: #2C3E50; /* Azul Escuro/Charcoal */
+            --color-highlight-green: #27AE60; /* Verde Esmeralda */
+            --color-neutral-light: #ECF0F1; /* Cinza Claro/Cloud */
+            --color-neutral-medium: #BDC3C7; /* Prata */
+            --color-neutral-dark: #7F8C8D; /* Asbestos */
+            --color-success: #2ECC71;
+            --color-info: #3498DB;
+            --color-warning: #F39C12;
+            --color-danger: #E74C3C;
+            --color-text-dark: #2d3748;
+            --color-text-light: #ffffff;
+            --color-bg-light: #f3f4f6;
+            --color-bg-white: #ffffff;
         }
 
         body {
-            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-bg-light);
+            display: flex;
+            justify-content: center;
+            align-items: center;
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            margin: 0;
             padding: 1rem;
+            box-sizing: border-box;
         }
-
-        .login-container, .main-container {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 1.5rem;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            width: 100%;
-            max-width: 800px;
-            margin: 1rem auto;
-            transition: 0.3s;
-        }
-
-        .login-container {
-            max-width: 400px;
-        }
-
-        .main-container {
-            display: none;
-            position: relative;
-            min-height: 90vh;
-        }
-
-        h1 {
-            color: #1e3c72;
+        .app-container {
+            background-color: var(--color-bg-white);
+            border-radius: 1.5rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            max-width: 90%;
+            width: 500px;
+            padding: 2.5rem;
             text-align: center;
-            margin-bottom: 1.5rem;
-            font-size: 1.8rem;
-        }
-
-        .form-grid {
-            display: grid;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .input-group {
-            margin-bottom: 1rem;
-            position: relative;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 0.3rem;
-            color: #333;
-            font-weight: 500;
-            font-size: 0.9rem;
-        }
-
-        .input-icon {
-            position: relative;
-        }
-
-        .input-icon i {
-            position: absolute;
-            left: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #666;
-            z-index: 1;
-            transition: color 0.3s;
-            font-size: 1.1rem;
-        }
-
-        .input-icon input,
-        .input-icon select,
-        .input-icon textarea {
-            width: 100%;
-            padding: 0.8rem 0.8rem 0.8rem 40px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: 0.3s;
-        }
-
-        button {
-            background: #1e3c72;
-            color: white;
-            border: none;
-            padding: 1rem;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: 0.3s;
-            width: 100%;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 8px;
         }
-
-        button:hover {
-            background: #2a5298;
+        .title {
+            color: var(--color-text-dark);
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+        .slogan {
+            color: var(--color-neutral-dark);
+            font-size: 1.125rem;
+            margin-bottom: 2rem;
+            font-weight: 400;
+        }
+        .icon {
+            font-size: 4rem;
+            margin-bottom: 2rem;
+            color: var(--color-primary-dark);
+        }
+        /* New style for the image icon */
+        .icon-image {
+            width: 120px; /* Adjust size as needed */
+            height: 120px; /* Adjust size as needed */
+            object-fit: contain; /* Ensures the image fits without distortion */
+            margin-bottom: 2rem;
+        }
+        .button-base {
+            padding: 0.875rem 2rem;
+            border-radius: 0.75rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            cursor: pointer;
+            border: none;
+            outline: none;
+            width: 100%;
+            margin-top: 1rem;
+        }
+        .button-base:hover {
             transform: translateY(-2px);
         }
+        .button-base:active {
+            transform: translateY(0);
+        }
 
-        .inventory-table {
+        /* Cores dos botões atualizadas */
+        .btn-primary {
+            background-color: var(--color-primary-dark);
+            color: var(--color-text-light);
+        }
+        .btn-primary:hover {
+            background-color: #34495e; /* Um pouco mais claro que o primary-dark */
+        }
+        .btn-primary:active {
+            background-color: #1f2c3a;
+        }
+
+        .btn-success {
+            background-color: var(--color-highlight-green);
+            color: var(--color-text-light);
+        }
+        .btn-success:hover {
+            background-color: #2ecc71; /* Um pouco mais claro que o highlight-green */
+        }
+        .btn-success:active {
+            background-color: #229a53;
+        }
+
+        .btn-info {
+            background-color: var(--color-info);
+            color: var(--color-text-light);
+        }
+        .btn-info:hover {
+            background-color: #2980b9;
+        }
+        .btn-info:active {
+            background-color: #216ba2;
+        }
+
+        .btn-danger {
+            background-color: var(--color-danger);
+            color: var(--color-text-light);
+        }
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+        .btn-danger:active {
+            background-color: #a52a22;
+        }
+
+        /* Estilos para campos de input */
+        .input-field {
             width: 100%;
-            border-collapse: collapse;
-            margin-top: 1.5rem;
-            overflow-x: auto;
-            display: block;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        .export-notice {
-            color: #2ecc71;
-            text-align: center;
-            margin-top: 1rem;
-            display: none;
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 8px;
-            justify-content: center;
-        }
-
-        .btn-editar {
-            background: #f1c40f;
-            padding: 0.5rem;
-            font-size: 0.9rem;
-        }
-
-        .btn-excluir {
-            background: #e74c3c;
-            padding: 0.5rem;
-            font-size: 0.9rem;
-        }
-
-        .form-buttons {
-            display: flex;
-            gap: 1rem;
-            margin-top: 1rem;
-            flex-wrap: wrap;
-        }
-
-        .form-buttons button {
-            flex: 1;
-            min-width: 150px;
-            padding: 1rem;
+            padding: 0.75rem 1rem;
+            margin-bottom: 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid var(--color-neutral-medium);
             font-size: 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
+            color: var(--color-text-dark);
+            outline: none;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .input-field:focus {
+            border-color: var(--color-primary-dark);
+            box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.2); /* Sombra baseada na cor primária */
         }
 
-        .btn-ver-itens {
-            background: #9b59b6;
-        }
-
-        .btn-exportar {
-            background: #2ecc71;
-        }
-
-        .btn-sair {
-            background: #e74c3c;
-        }
-
-        /* Modal styles */
-        .modal-itens {
-            display: none;
-            position: fixed;
-            z-index: 9999;
-            left: 0; top: 0; width: 100vw; height: 100vh;
-            background: rgba(30, 60, 114, 0.65);
-            justify-content: center;
-            align-items: center;
-        }
-        .modal-itens.active {
-            display: flex;
-        }
-        .modal-content {
-            background: #fff;
-            border-radius: 12px;
-            box-shadow: 0 6px 24px rgba(0,0,0,0.22);
-            padding: 2rem;
-            position: relative;
-            min-width: 60vw;
-            max-width: 96vw;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-        .close-modal {
-            position: absolute;
-            top: 18px;
-            right: 24px;
-            font-size: 2rem;
-            color: #e74c3c;
-            cursor: pointer;
-        }
-        .reg-photo-preview {
-            width: 80px;
-            height: 80px;
-            object-fit: cover;
-            border-radius: 50%;
-            margin: 0.5rem auto 0.5rem auto;
-            display: block;
-            border: 2px solid #1e3c72;
-            background: #f5f5f5;
-        }
-        .reg-photo-btns {
-            display: flex;
-            gap: 0.5rem;
-            margin-bottom: 0.5rem;
-            justify-content: center;
-        }
-        .reg-photo-btns button {
-            min-width: 0;
-            padding: 0.5rem;
-            font-size: 0.95rem;
-        }
-        @media (min-width: 768px) {
-            .form-grid {
-                grid-template-columns: repeat(2, 1fr);
+        /* Responsividade para telas menores */
+        @media (max-width: 640px) {
+            .app-container {
+                padding: 1.5rem;
+                border-radius: 1rem;
+            }
+            .title {
+                font-size: 2rem;
+            }
+            .slogan {
+                font-size: 1rem;
+            }
+            .icon {
+                font-size: 3rem;
+            }
+            .button-base {
+                padding: 0.75rem 1.5rem;
+                font-size: 1.125rem;
             }
         }
-        @media (max-width: 720px) {
-            .modal-content { min-width: 95vw; padding: 1rem; }
+
+        /* Estilos do Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background-color: var(--color-bg-white);
+            border-radius: 1rem;
+            padding: 1rem;
+            max-width: 95%;
+            width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            position: relative;
+            transform: translateY(-20px);
+            transition: transform 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        .modal-overlay.show .modal-content {
+            transform: translateY(0);
+        }
+        .modal-close-button {
+            position: absolute;
+            top: 0.75rem;
+            right: 0.75rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--color-neutral-dark);
+        }
+        .modal-close-button:hover {
+            color: var(--color-primary-dark);
+        }
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--color-primary-dark);
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 0.75rem;
+            text-align: left;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.4rem;
+            font-weight: 600;
+            color: var(--color-text-dark);
+            font-size: 0.9rem;
+        }
+        .form-group .input-field, .form-group select {
+            width: 100%;
+            padding: 0.6rem 0.8rem;
+            border-radius: 0.5rem;
+            border: 1px solid var(--color-neutral-medium);
+            font-size: 0.95rem;
+            color: var(--color-text-dark);
+            outline: none;
+        }
+        .form-group .input-field:focus, .form-group select:focus {
+            border-color: var(--color-primary-dark);
+            box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.2);
+        }
+        .photo-upload-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            border: 1px dashed var(--color-neutral-medium);
+            border-radius: 0.75rem;
+            background-color: var(--color-neutral-light);
+        }
+        .photo-preview {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 0.75rem;
+            border: 2px solid var(--color-neutral-medium);
+            background-color: var(--color-neutral-light);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--color-neutral-dark);
+            font-size: 0.8rem;
+        }
+        .photo-preview img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+        }
+        .photo-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .photo-buttons button {
+            padding: 0.4rem 0.8rem;
+            border-radius: 0.4rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        .photo-buttons .btn-camera, .photo-buttons .btn-upload {
+            background-color: var(--color-primary-dark);
+            color: var(--color-text-light);
+        }
+        .photo-buttons .btn-camera:hover, .photo-buttons .btn-upload:hover {
+            background-color: #34495e;
+        }
+        .photo-buttons .btn-remove {
+            background-color: var(--color-danger);
+            color: var(--color-text-light);
+        }
+        .photo-buttons .btn-remove:hover {
+            background-color: #c0392b;
+        }
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+        }
+        .modal-actions button {
+            padding: 0.6rem 1.2rem;
+            border-radius: 0.6rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        .modal-actions .btn-cancel {
+            background-color: var(--color-neutral-medium);
+            color: var(--color-text-dark);
+        }
+        .modal-actions .btn-cancel:hover {
+            background-color: #aeb6bf;
+        }
+        .modal-actions .btn-save {
+            background-color: var(--color-primary-dark);
+            color: var(--color-text-light);
+        }
+        .modal-actions .btn-save:hover {
+            background-color: #34495e;
+        }
+        .error-message {
+            color: var(--color-danger);
+            font-size: 0.8rem;
+            margin-top: -0.4rem;
+            margin-bottom: 0.8rem;
+            text-align: left;
+        }
+        .camera-stream-container {
+            margin-top: 0.75rem;
+            margin-bottom: 0.75rem;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+        .camera-stream-container video {
+            width: 100%;
+            max-width: 250px;
+            height: auto;
+            border-radius: 0.5rem;
+            background-color: #000;
+        }
+        .camera-stream-container canvas {
+            display: none;
+        }
+        .capture-photo-button {
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            background-color: var(--color-primary-dark);
+            color: var(--color-text-light);
+            margin-top: 1rem;
+            width: auto;
+            max-width: 180px;
+        }
+        .capture-photo-button:hover {
+            background-color: #34495e;
+            transform: translateY(-1px);
+        }
+        .capture-photo-button:active {
+            background-color: #1f2c3a;
+            transform: translateY(0);
         }
 
-        .main-header-fixed {
-            position: sticky;
+        /* Estilos para o Modal de Alerta Customizado */
+        .custom-alert-overlay {
+            position: fixed;
             top: 0;
-            background: #f7f8fa;
-            z-index: 10;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1001;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .custom-alert-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        .custom-alert-content {
+            background-color: var(--color-bg-white);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            max-width: 90%;
+            width: 350px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            transform: translateY(-20px);
+            transition: transform 0.3s ease;
+        }
+        .custom-alert-overlay.show .custom-alert-content {
+            transform: translateY(0);
+        }
+        .custom-alert-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--color-primary-dark);
+            margin-bottom: 1rem;
+        }
+        .custom-alert-message {
+            font-size: 1rem;
+            color: var(--color-neutral-dark);
+            margin-bottom: 1.5rem;
+        }
+        .custom-alert-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+        .custom-alert-button {
+            background-color: var(--color-primary-dark);
+            color: var(--color-text-light);
+            padding: 0.6rem 1.2rem;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            outline: none;
+            transition: background-color 0.2s ease;
+        }
+        .custom-alert-button:hover {
+            background-color: #34495e;
+        }
+        .custom-alert-button.cancel {
+            background-color: var(--color-neutral-medium);
+            color: var(--color-text-dark);
+        }
+        .custom-alert-button.cancel:hover {
+            background-color: #aeb6bf;
+        }
+
+        /* Ajustes para telas maiores (desktop) */
+        @media (min-width: 641px) {
+            .app-container {
+                padding: 2.5rem;
+            }
+            .title {
+                font-size: 2.5rem;
+            }
+            .slogan {
+                font-size: 1.125rem;
+            }
+            .icon {
+                font-size: 4rem;
+            }
+            .button-base {
+                padding: 0.875rem 2rem;
+                font-size: 1.25rem;
+            }
+            .modal-content {
+                padding: 2rem;
+                max-height: 95vh;
+            }
+            .modal-title {
+                font-size: 1.75rem;
+                margin-bottom: 1.5rem;
+            }
+            .form-group {
+                margin-bottom: 1rem;
+            }
+            .form-group label {
+                margin-bottom: 0.5rem;
+                font-size: 1rem;
+            }
+            .form-group .input-field, .form-group select {
+                padding: 0.75rem 1rem;
+                font-size: 1rem;
+            }
+            .photo-upload-section {
+                margin-top: 1.5rem;
+                margin-bottom: 1.5rem;
+                padding: 1rem;
+            }
+            .photo-preview {
+                width: 120px;
+                height: 120px;
+                margin-bottom: 1rem;
+                font-size: 0.875rem;
+            }
+            .photo-buttons button {
+                padding: 0.5rem 1rem;
+                border-radius: 0.5rem;
+                font-size: 0.9rem;
+            }
+            .modal-actions {
+                margin-top: 2rem;
+                gap: 1rem;
+            }
+            .modal-actions button {
+                padding: 0.75rem 1.5rem;
+                border-radius: 0.75rem;
+                font-size: 1rem;
+            }
+            .error-message {
+                font-size: 0.875rem;
+                margin-top: -0.5rem;
+                margin-bottom: 1rem;
+            }
+            .camera-stream-container {
+                margin-top: 1rem;
+                margin-bottom: 1rem;
+            }
+            .camera-stream-container video {
+                max-width: 300px;
+            }
+            .capture-photo-button {
+                padding: 0.875rem 2rem;
+                font-size: 1.25rem;
+                max-width: none;
+            }
+        }
+
+        /* Estilos específicos do Dashboard */
+        .dashboard-container {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            min-height: 100vh;
+            background-color: var(--color-bg-light);
+            border-radius: 1.5rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            overflow: hidden;
+        }
+
+        .dashboard-header {
+            background-color: var(--color-primary-dark);
+            color: var(--color-text-light);
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom-left-radius: 1.5rem;
+            border-bottom-right-radius: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .dashboard-header .user-info {
             display: flex;
             align-items: center;
-            gap: 1.2rem;
-            padding: 1.2rem 1.2rem 1.2rem 1.2rem;
-            border-radius: 15px 15px 0 0;
-            box-shadow: 0 2px 8px rgba(30,60,114,0.07);
-            min-height: 70px;
+            gap: 1rem;
         }
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 0.7rem;
-        }
-        .user-photo-header {
+
+        .dashboard-header .user-avatar {
             width: 48px;
             height: 48px;
             border-radius: 50%;
             object-fit: cover;
-            border: 2px solid #1e3c72;
-            background: #f5f5f5;
-            box-shadow: 0 1px 4px rgba(30,60,114,0.10);
+            border: 2px solid var(--color-text-light);
         }
-        .user-name-header {
-            font-weight: bold;
-            color: #1e3c72;
-            font-size: 1.15rem;
-            letter-spacing: 0.5px;
+
+        .dashboard-header .user-name {
+            font-size: 1.5rem;
+            font-weight: 600;
         }
-        .main-header-fixed h1 {
-            margin: 0;
-            font-size: 1.7rem;
-            color: #1e3c72;
-            flex: 1;
+
+        .dashboard-header .logout-button {
+            background-color: var(--color-danger);
+            color: var(--color-text-light);
+            padding: 0.6rem 1.2rem;
+            border-radius: 0.75rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            border: none;
+            outline: none;
+        }
+
+        .dashboard-header .logout-button:hover {
+            background-color: #c0392b;
+        }
+
+        .dashboard-main {
+            display: flex;
+            flex-grow: 1;
+        }
+
+        .dashboard-sidebar {
+            background-color: var(--color-primary-dark);
+            color: var(--color-text-light);
+            width: 250px;
+            padding: 2rem 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            border-top-right-radius: 1.5rem;
+            border-bottom-right-radius: 1.5rem;
+            box-shadow: 4px 0 6px -1px rgba(0, 0, 0, 0.1), 2px 0 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .dashboard-sidebar .sidebar-item {
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 1.125rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .dashboard-sidebar .sidebar-item:hover {
+            background-color: #34495e;
+            transform: translateX(3px);
+        }
+
+        .dashboard-sidebar .sidebar-item.active {
+            background-color: var(--color-highlight-green);
+            font-weight: 700;
+        }
+
+        .dashboard-content {
+            flex-grow: 1;
+            padding: 2rem;
+            background-color: var(--color-bg-white);
+            border-radius: 1.5rem;
+            margin: 1.5rem;
+            box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+            overflow-y: auto;
+        }
+
+        .dashboard-content h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--color-primary-dark);
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--color-neutral-light);
+            padding-bottom: 0.75rem;
+        }
+
+        .dashboard-section-placeholder {
+            background-color: var(--color-neutral-light);
+            border: 1px dashed var(--color-neutral-medium);
+            border-radius: 0.75rem;
+            padding: 2rem;
+            text-align: center;
+            color: var(--color-neutral-dark);
+            font-size: 1.125rem;
+            font-style: italic;
+        }
+
+        .crud-buttons-container {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .crud-buttons-container .button-base {
+            width: auto;
+            padding: 0.6rem 1.2rem;
+            font-size: 1rem;
+            margin-top: 0;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1.5rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            border-radius: 0.75rem;
+            overflow: hidden;
+        }
+
+        .data-table th, .data-table td {
+            padding: 1rem;
             text-align: left;
+            border-bottom: 1px solid var(--color-neutral-light);
         }
-        .form-buttons-fixed {
-            position: sticky;
-            bottom: 0;
-            background: #f7f8fa;
-            border-radius: 0 0 15px 15px;
-            box-shadow: 0 -2px 8px rgba(30,60,114,0.07);
-            padding: 1.2rem 1.2rem 1.2rem 1.2rem;
-            z-index: 10;
-            margin-bottom: 0;
+
+        .data-table th {
+            background-color: #e0e6eb; /* Um cinza mais claro para cabeçalhos de tabela */
+            color: var(--color-text-dark);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.875rem;
+            cursor: pointer; /* Para indicar que é clicável para ordenar */
         }
-        @media (max-width: 720px) {
-            .main-header-fixed, .form-buttons-fixed { padding: 0.7rem; }
-            .user-photo-header { width: 36px; height: 36px; }
-            .main-header-fixed h1 { font-size: 1.1rem; }
+
+        .data-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .data-table tbody tr:hover {
+            background-color: #f8fafc;
+        }
+
+        .data-table .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .data-table .action-buttons .button-base {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.8rem;
+            margin-top: 0;
+            width: auto;
+        }
+
+        /* Paginação */
+        .pagination-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+        }
+        .pagination-controls button {
+            background-color: var(--color-primary-dark);
+            color: var(--color-text-light);
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        .pagination-controls button:hover:not(:disabled) {
+            background-color: #34495e;
+        }
+        .pagination-controls button:disabled {
+            background-color: var(--color-neutral-medium);
+            cursor: not-allowed;
+        }
+        .pagination-controls span {
+            font-size: 1rem;
+            color: var(--color-text-dark);
+        }
+
+        /* Estilos para o Dashboard Overview */
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        .overview-card {
+            background-color: var(--color-bg-white);
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            padding: 1.5rem;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .overview-card .card-icon {
+            font-size: 2.5rem;
+            color: var(--color-highlight-green);
+            margin-bottom: 0.75rem;
+        }
+        .overview-card .card-value {
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: var(--color-primary-dark);
+            margin-bottom: 0.5rem;
+        }
+        .overview-card .card-title {
+            font-size: 1.125rem;
+            font-weight: 500;
+            color: var(--color-text-dark);
+        }
+        .overview-card.alert {
+            background-color: #ffebe6; /* Fundo mais claro para alertas */
+            border: 1px solid var(--color-danger);
+        }
+        .overview-card.alert .card-icon, .overview-card.alert .card-value, .overview-card.alert .card-title {
+            color: var(--color-danger);
+        }
+
+        /* Campo de Pesquisa */
+        .search-container {
+            margin-bottom: 1.5rem;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        .search-container input {
+            flex-grow: 1;
+        }
+
+        /* Responsividade para o Dashboard */
+        @media (max-width: 768px) {
+            .dashboard-container {
+                flex-direction: column;
+                border-radius: 1rem;
+            }
+            .dashboard-header {
+                padding: 1rem 1.5rem;
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+                border-bottom-left-radius: 1rem;
+                border-bottom-right-radius: 1rem;
+            }
+            .dashboard-header .user-info {
+                flex-direction: column;
+            }
+            .dashboard-header .logout-button {
+                width: auto;
+                margin-top: 0.5rem;
+            }
+            .dashboard-main {
+                flex-direction: column;
+            }
+            .dashboard-sidebar {
+                width: 100%;
+                padding: 1rem;
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+                border-top-right-radius: 0;
+                border-bottom-right-radius: 0;
+                border-radius: 1rem;
+                margin-top: 1rem;
+            }
+            .dashboard-sidebar .sidebar-item {
+                flex: 1 1 auto;
+                text-align: center;
+                justify-content: center;
+                font-size: 1rem;
+                padding: 0.6rem 0.8rem;
+            }
+            .dashboard-content {
+                padding: 1.5rem;
+                margin: 1rem;
+                border-radius: 1rem;
+            }
+            .dashboard-content h2 {
+                font-size: 1.5rem;
+                margin-bottom: 1rem;
+                padding-bottom: 0.5rem;
+            }
+            .dashboard-section-placeholder {
+                padding: 1.5rem;
+                font-size: 1rem;
+            }
+            .crud-buttons-container {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            .crud-buttons-container .button-base {
+                width: 100%;
+            }
+            /* Specific styles for .data-table when viewed on small screens */
+            .data-table.responsive-table {
+                border: 0; /* Remove table border for mobile */
+            }
+
+            .data-table.responsive-table thead {
+                border: none;
+                clip: rect(0 0 0 0);
+                height: 1px;
+                margin: -1px;
+                overflow: hidden;
+                padding: 0;
+                position: absolute;
+                width: 1px;
+            }
+
+            .data-table.responsive-table tr {
+                border-bottom: 3px solid var(--color-neutral-medium); /* Separator between cards */
+                display: block;
+                margin-bottom: .625em;
+                background-color: var(--color-bg-white);
+                border-radius: 0.75rem;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            }
+
+            .data-table.responsive-table td {
+                border-bottom: 1px solid var(--color-neutral-light); /* Separator between fields */
+                display: block;
+                font-size: .8em;
+                text-align: right;
+                padding-left: 50%; /* Make space for the label */
+                position: relative;
+            }
+
+            .data-table.responsive-table td::before {
+                /*
+                * aria-label might be more appropriate here
+                */
+                content: attr(data-label);
+                position: absolute;
+                left: 0;
+                width: 45%;
+                padding-left: 10px;
+                font-weight: bold;
+                text-align: left;
+                color: var(--color-text-dark);
+            }
+
+            .data-table.responsive-table .action-buttons {
+                justify-content: flex-end; /* Align action buttons to the right */
+                padding-top: 10px;
+                padding-bottom: 10px;
+                border-bottom: none; /* No border for the last td in the row */
+            }
+            .data-table.responsive-table .action-buttons .button-base {
+                width: auto; /* Allow buttons to size naturally */
+                font-size: 0.75rem; /* Smaller buttons */
+                padding: 0.3rem 0.6rem;
+            }
+            .search-container {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            .overview-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Tela de Boas-Vindas -->
-    <div id="welcomeModal" class="modal-itens active" style="background: rgba(30, 60, 114, 0.65); justify-content: center; align-items: center;">
-        <div class="modal-content" style="max-width:400px; text-align:center; margin: auto; box-shadow: 0 5px 15px rgba(0,0,0,0.2); border-radius: 15px;">
-            <img src="imagens/logo2.png" alt="Logo Onde Estou" style="width:110px; height:110px; margin-bottom:1rem; border-radius:16px; box-shadow:0 2px 8px rgba(30,60,114,0.13); background:#fff;">
-            <h2 style="color:#1e3c72; margin-bottom:1rem;">Bem-vindo ao Onde Estou?</h2>
-            <p style="color:#333; margin-bottom:2rem;">Gerencie seus itens e perfil de forma simples e segura.</p>
-            <button id="welcomeEntrarBtn" style="background:#1e3c72; color:white; font-size:1.1rem; padding:0.8rem 2rem; border-radius:8px;">
-                <i class="fas fa-sign-in-alt"></i> Entrar
-            </button>
+    <div id="app" class="app-container">
+        <!-- O conteúdo será renderizado aqui pelo JavaScript -->
+    </div>
+
+    <!-- Modal de Criar/Editar Perfil (Admin) -->
+    <div id="createProfileModal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close-button" id="closeCreateProfileModal">&times;</button>
+            <h2 class="modal-title" id="createProfileModalTitle"></h2>
+            <form id="createProfileForm">
+                <div class="form-group">
+                    <label for="profileEmail">E-mail <span class="text-red-500">*</span></label>
+                    <input type="email" id="profileEmail" class="input-field" placeholder="seuemail@exemplo.com" required>
+                    <p id="emailError" class="error-message hidden">Por favor, insira um e-mail válido.</p>
+                </div>
+                <div class="form-group">
+                    <label for="profileName">Nome <span class="text-red-500">*</span></label>
+                    <input type="text" id="profileName" class="input-field" placeholder="Nome Completo" required>
+                    <p id="nameError" class="error-message hidden">Por favor, insira seu nome.</p>
+                </div>
+                <div class="form-group">
+                    <label for="profilePassword">Senha <span class="text-red-500">*</span></label>
+                    <input type="password" id="profilePassword" class="input-field" placeholder="Mínimo 6 caracteres" required minlength="6">
+                    <p id="passwordError" class="error-message hidden">A senha deve ter no mínimo 6 caracteres.</p>
+                </div>
+                <div class="form-group">
+                    <label for="profileConfirmPassword">Confirmar Senha <span class="text-red-500">*</span></label>
+                    <input type="password" id="profileConfirmPassword" class="input-field" placeholder="Confirme sua senha" required>
+                    <p id="confirmPasswordError" class="error-message hidden">As senhas não coincidem.</p>
+                </div>
+                <!-- Tipo de perfil fixo como administrador para este modal -->
+                <input type="hidden" id="profileType" value="administrador">
+
+                <div class="photo-upload-section">
+                    <label class="block text-center mb-2 font-semibold text-gray-700">Foto do Usuário (Opcional)</label>
+                    <div class="photo-preview" id="photoPreview">
+                        <span>Sem Foto</span>
+                        <img id="userPhoto" src="" alt="Foto do Usuário" class="hidden">
+                    </div>
+                    <div class="photo-buttons">
+                        <button type="button" id="takePhotoButton" class="btn-camera">Tirar Foto</button>
+                        <input type="file" id="uploadPhotoInput" accept="image/*" class="hidden">
+                        <button type="button" id="uploadPhotoButton" class="btn-upload">Upload Foto</button>
+                        <button type="button" id="removePhotoButton" class="btn-remove hidden">Remover Foto</button>
+                    </div>
+                    <div class="camera-stream-container hidden" id="cameraStreamContainer">
+                        <video id="cameraStream" autoplay playsinline></video>
+                        <button type="button" id="capturePhotoButton" class="capture-photo-button">Capturar Foto</button>
+                    </div>
+                    <canvas id="photoCanvas" style="display: none;"></canvas>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" id="cancelCreateProfile">Cancelar</button>
+                    <button type="submit" class="btn-save">Salvar Perfil</button>
+                </div>
+            </form>
         </div>
     </div>
 
-    <!-- Tela de Login -->
-    <div class="login-container" id="loginContainer">
-        <h1>🔑 Onde Estou?</h1>
-        <form id="loginForm">
-            <div class="input-group">
-                <label><i class="fas fa-user"></i> Usuário</label>
-                <div class="input-icon">
-                    <input type="text" id="username" placeholder="Opcional">
-                    <i class="fas fa-user-circle"></i>
-                </div>
-            </div>
-            <div class="input-group">
-                <label><i class="fas fa-lock"></i> Senha</label>
-                <div class="input-icon">
-                    <input type="password" id="password" placeholder="Opcional">
-                    <i class="fas fa-key"></i>
-                </div>
-            </div>
-            <button type="submit"><i class="fas fa-sign-in-alt"></i> Entrar</button>
-            <div class="switch-form">
-                <a onclick="toggleRegister()"><i class="fas fa-user-plus"></i> Criar nova conta</a>
-            </div>
-        </form>
+    <!-- Novo Modal para CRUD de Itens/Categorias/Setores -->
+    <div id="crudModal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close-button" id="closeCrudModal">&times;</button>
+            <h2 class="modal-title" id="crudModalTitle"></h2>
+            <form id="crudForm">
+                <input type="hidden" id="crudItemId">
+                <input type="hidden" id="crudItemType">
 
-        <form id="registerForm" class="hidden">
-            <div class="input-group">
-                <label><i class="fas fa-user-edit"></i> Novo Usuário</label>
-                <div class="input-icon">
-                    <input type="text" id="newUser" placeholder="Nome de usuário" required>
-                    <i class="fas fa-users"></i>
+                <div id="crudFormFields">
+                    <!-- Campos do formulário serão injetados aqui -->
                 </div>
-            </div>
-            <div class="input-group">
-                <label><i class="fas fa-envelope"></i> E-mail</label>
-                <div class="input-icon">
-                    <input type="email" id="newEmail" placeholder="E-mail" required>
-                    <i class="fas fa-envelope"></i>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" id="cancelCrudOperation">Cancelar</button>
+                    <button type="submit" class="btn-save" id="saveCrudItem">Salvar</button>
                 </div>
-            </div>
-            <div class="input-group">
-                <label><i class="fas fa-lock"></i> Nova Senha</label>
-                <div class="input-icon">
-                    <input type="password" id="newPassword" placeholder="Senha" required>
-                    <i class="fas fa-shield-alt"></i>
-                </div>
-            </div>
-            <!-- NOVO CAMPO PARA FOTO -->
-            <div class="input-group">
-                <label><i class="fas fa-camera"></i> Foto do Usuário (opcional)</label>
-                <img id="regPhotoPreview" class="reg-photo-preview" src="" alt="Prévia da Foto" style="display:none;">
-                <div class="reg-photo-btns">
-                    <button type="button" onclick="abrirCamera()" title="Tirar Foto"><i class="fas fa-camera"></i></button>
-                    <button type="button" onclick="document.getElementById('regPhotoInput').click()" title="Fazer Upload"><i class="fas fa-upload"></i></button>
-                    <button type="button" onclick="removerFoto()" title="Remover Foto"><i class="fas fa-times"></i></button>
-                </div>
-                <input type="file" id="regPhotoInput" accept="image/*" style="display:none;" onchange="uploadFoto(event)">
-                <!-- Video para camera, só aparece durante captura -->
-                <video id="regCameraVideo" width="100%" height="160" autoplay playsinline style="display:none; border-radius:12px; border:1px solid #ccc;"></video>
-                <button type="button" id="tirarFotoBtn" onclick="tirarFoto()" style="display:none; margin: 0.5rem auto 0.2rem auto; width:100%; background:#1e3c72;">
-                  <i class="fas fa-camera-retro"></i> Capturar
-                </button>
-            </div>
-            <button type="submit"><i class="fas fa-save"></i> Registrar</button>
-            <div class="switch-form">
-                <a onclick="toggleRegister()"><i class="fas fa-sign-in-alt"></i> Já tem uma conta? Faça login</a>
-            </div>
-        </form>
-        <!-- Modal Editar Perfil -->
-        <div id="modalEditarPerfil" class="modal-itens hidden">
-            <div class="modal-content" style="max-width:420px;">
-                <span class="close-modal" onclick="fecharModalEditarPerfil()">&times;</span>
-                <h2>Editar Perfil</h2>
-                <form id="formAutenticarPerfil">
-                    <div class="input-group">
-                        <label><i class="fas fa-envelope"></i> E-mail</label>
-                        <div class="input-icon">
-                            <input type="email" id="editEmailLogin" required>
-                            <i class="fas fa-envelope"></i>
-                        </div>
-                    </div>
-                    <div class="input-group">
-                        <label><i class="fas fa-lock"></i> Senha</label>
-                        <div class="input-icon">
-                            <input type="password" id="editSenhaLogin" required>
-                            <i class="fas fa-key"></i>
-                        </div>
-                    </div>
-                    <button type="submit"><i class="fas fa-sign-in-alt"></i> Autenticar</button>
-                </form>
-                <form id="formEditarPerfil" class="hidden">
-                    <div class="input-group">
-                        <label><i class="fas fa-user-edit"></i> Nome de Usuário</label>
-                        <div class="input-icon">
-                            <input type="text" id="editNome" required>
-                            <i class="fas fa-users"></i>
-                        </div>
-                    </div>
-                    <div class="input-group">
-                        <label><i class="fas fa-envelope"></i> E-mail</label>
-                        <div class="input-icon">
-                            <input type="email" id="editEmail" required>
-                            <i class="fas fa-envelope"></i>
-                        </div>
-                    </div>
-                    <div class="input-group">
-                        <label><i class="fas fa-lock"></i> Nova Senha</label>
-                        <div class="input-icon">
-                            <input type="password" id="editSenha" required>
-                            <i class="fas fa-shield-alt"></i>
-                        </div>
-                    </div>
-                    <div class="input-group">
-                        <label><i class="fas fa-camera"></i> Foto do Usuário (opcional)</label>
-                        <img id="editPhotoPreview" class="reg-photo-preview" src="" alt="Prévia da Foto" style="display:none;">
-                        <div class="reg-photo-btns">
-                            <button type="button" onclick="abrirCameraEditar()" title="Tirar Foto"><i class="fas fa-camera"></i></button>
-                            <button type="button" onclick="document.getElementById('editPhotoInput').click()" title="Fazer Upload"><i class="fas fa-upload"></i></button>
-                            <button type="button" onclick="removerFotoEditar()" title="Remover Foto"><i class="fas fa-times"></i></button>
-                        </div>
-                        <input type="file" id="editPhotoInput" accept="image/*" style="display:none;" onchange="uploadFotoEditar(event)">
-                        <video id="editCameraVideo" width="100%" height="160" autoplay playsinline style="display:none; border-radius:12px; border:1px solid #ccc;"></video>
-                        <button type="button" id="tirarFotoBtnEditar" onclick="tirarFotoEditar()" style="display:none; margin: 0.5rem auto 0.2rem auto; width:100%; background:#1e3c72;">
-                          <i class="fas fa-camera-retro"></i> Capturar
-                        </button>
-                    </div>
-                    <button type="submit"><i class="fas fa-save"></i> Salvar Alterações</button>
-                    <button type="button" id="btnExcluirPerfil" style="background:#e74c3c; margin-top:0.7rem;"><i class="fas fa-user-times"></i> Excluir Perfil</button>
-                </form>
-            </div>
+            </form>
         </div>
     </div>
 
-    <!-- Interface Principal -->
-    <div class="main-container" id="mainContainer">
-        <div class="main-header-fixed">
-            <div class="user-info">
-                <img id="userPhotoHeader" class="user-photo-header" src="" alt="Foto do Usuário" style="display:none;">
-                <span id="userNameHeader" class="user-name-header"></span>
-            </div>
-            <h1>🔑 Onde Estou?</h1>
-        </div>
-        <form id="equipmentForm">
-            <div class="form-grid">
-                <div class="input-group">
-                    <label><i class="fas fa-box"></i> Nome do Item</label>
-                    <div class="input-icon">
-                        <input type="text" id="itemName" required>
-                        <i class="fas fa-tag"></i>
-                    </div>
-                </div>
-                
-                <div class="input-group">
-                    <label><i class="fas fa-calendar"></i> Data de Cadastro</label>
-                    <div class="input-icon">
-                        <input type="date" id="registrationDate" required>
-                        <i class="fas fa-calendar-alt"></i>
-                    </div>
-                </div>
-                
-                <div class="input-group">
-                    <label><i class="fas fa-map-marker"></i> Local</label>
-                    <div class="input-icon">
-                        <input type="text" id="location" required>
-                        <i class="fas fa-location-arrow"></i>
-                    </div>
-                </div>
-                
-                <div class="input-group">
-                    <label><i class="fas fa-tools"></i> Última Manutenção</label>
-                    <div class="input-icon">
-                        <input type="date" id="lastMaintenance" required>
-                        <i class="fas fa-wrench"></i>
-                    </div>
-                </div>
-                
-                <div class="input-group">
-                    <label><i class="fas fa-folder"></i> Categoria</label>
-                    <div class="input-icon">
-                        <select id="category" required>
-                            <option value="">Selecione</option>
-                            <option>Hardware</option>
-                            <option>Periférico</option>
-                            <option>Rede</option>
-                            <option>Armazenamento</option>
-                        </select>
-                        <i class="fas fa-list"></i>
-                    </div>
-                    <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
-                        <button type="button" onclick="adicionarCategoria()" style="padding: 0.5rem;">
-                            <i class="fas fa-plus"></i> Adicionar
-                        </button>
-                        <button type="button" onclick="editarCategoria()" style="padding: 0.5rem;">
-                            <i class="fas fa-edit"></i> Editar
-                        </button>
-                        <button type="button" onclick="excluirCategoria()" style="padding: 0.5rem;">
-                            <i class="fas fa-trash"></i> Excluir
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="input-group">
-                    <label><i class="fas fa-shopping-cart"></i> Origem da Compra</label>
-                    <div class="input-icon">
-                        <input type="text" id="purchaseOrigin" required>
-                        <i class="fas fa-store"></i>
-                    </div>
-                </div>
-                
-                <div class="input-group">
-                    <label><i class="fas fa-dollar-sign"></i> Valor (R$)</label>
-                    <div class="input-icon">
-                        <input type="number" step="0.01" id="value" required>
-                        <i class="fas fa-money-bill-wave"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="input-group">
-                <label><i class="fas fa-comment"></i> Observações</label>
-                <div class="input-icon">
-                    <textarea id="observations" rows="3"></textarea>
-                    <i class="fas fa-edit"></i>
-                </div>
-            </div>
-            <div class="form-buttons form-buttons-fixed">
-                <button type="submit"><i class="fas fa-check-circle"></i> Salvar Item</button>
-                <button type="button" class="btn-ver-itens" onclick="abrirModalItens()">
-                    <i class="fas fa-eye"></i> Ver Itens
-                </button>
-                <button class="btn-exportar" onclick="exportarPlanilhaCompleta()">
-                    <i class="fas fa-file-excel"></i> Gerar Planilha
-                </button>
-                <button class="btn-sair" onclick="handleSair()">
-                    <i class="fas fa-door-open"></i> Sair
-                </button>
-            </div>
-        </form>
-        <div class="export-notice" id="exportNotice"></div>
-
-        <!-- Modal de visualização de itens -->
-        <div id="modalItens" class="modal-itens hidden">
-            <div class="modal-content">
-                <span class="close-modal" onclick="fecharModalItens()">&times;</span>
-                <h2>Itens Cadastrados</h2>
-                <table class="inventory-table">
-                    <thead>
-                        <tr>
-                            <th>Item</th>
-                            <th>Data</th>
-                            <th>Local</th>
-                            <th>Manutenção</th>
-                            <th>Categoria</th>
-                            <th>Valor</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody id="modalInventoryBody"></tbody>
-                </table>
+    <!-- Modal de Alerta Customizado (Agora também para Confirmação) -->
+    <div id="customAlertDialog" class="custom-alert-overlay">
+        <div class="custom-alert-content">
+            <h3 id="customAlertTitle" class="custom-alert-title"></h3>
+            <p id="customAlertMessage" class="custom-alert-message"></p>
+            <div id="customAlertButtons" class="custom-alert-buttons">
+                <button id="customAlertOkButton" class="custom-alert-button">OK</button>
             </div>
         </div>
     </div>
 
     <script>
-        // Controle de Login
-        let editIndex = null;
-        let mostrarTodos = false;
+        const appDiv = document.getElementById('app');
+        const createProfileModal = document.getElementById('createProfileModal');
+        const closeCreateProfileModalBtn = document.getElementById('closeCreateProfileModal');
+        const cancelCreateProfileBtn = document.getElementById('cancelCreateProfile');
+        const createProfileForm = document.getElementById('createProfileForm');
+        const userPhoto = document.getElementById('userPhoto');
+        const photoPreview = document.getElementById('photoPreview');
+        const takePhotoButton = document.getElementById('takePhotoButton');
+        const uploadPhotoButton = document.getElementById('uploadPhotoButton');
+        const uploadPhotoInput = document.getElementById('uploadPhotoInput');
+        const removePhotoButton = document.getElementById('removePhotoButton');
+        const cameraStream = document.getElementById('cameraStream');
+        const cameraStreamContainer = document.getElementById('cameraStreamContainer');
+        const capturePhotoButton = document.getElementById('capturePhotoButton');
+        const photoCanvas = document.getElementById('photoCanvas');
 
-        function toggleRegister() {
-            document.getElementById('loginForm').classList.toggle('hidden');
-            document.getElementById('registerForm').classList.toggle('hidden');
-            // Resetar e esconder câmera/upload ao alternar tela
-            fecharCamera();
-            removerFoto();
+        // Elementos do novo modal CRUD
+        const crudModal = document.getElementById('crudModal');
+        const closeCrudModalBtn = document.getElementById('closeCrudModal');
+        const crudModalTitle = document.getElementById('crudModalTitle');
+        const crudForm = document.getElementById('crudForm');
+        const crudItemId = document.getElementById('crudItemId');
+        const crudItemType = document.getElementById('crudItemType');
+        const crudFormFields = document.getElementById('crudFormFields');
+        const cancelCrudOperationBtn = document.getElementById('cancelCrudOperation');
+        const saveCrudItemBtn = document.getElementById('saveCrudItem');
+
+        // Elementos do modal de alerta/confirmação
+        const customAlertDialog = document.getElementById('customAlertDialog');
+        const customAlertTitle = document.getElementById('customAlertTitle');
+        const customAlertMessage = document.getElementById('customAlertMessage');
+        const customAlertButtons = document.getElementById('customAlertButtons'); // Container dos botões
+        const customAlertOkButton = document.getElementById('customAlertOkButton'); // Botão OK padrão
+
+        let currentStream; // Para armazenar o stream da câmera
+        let adminProfile = null; // Armazenará o perfil do administrador do Local Storage
+        let loggedInUser = null; // Objeto para simular o usuário logado (será o adminProfile)
+
+        // --- Dados em Memória (carregados/salvos do Local Storage) ---
+        let inventoryItems = [];
+        let categories = [];
+        let sectors = [];
+
+        // --- Funções de Persistência (Local Storage) ---
+        function saveDataToLocalStorage() {
+            localStorage.setItem('adminProfile', JSON.stringify(adminProfile));
+            localStorage.setItem('inventoryItems', JSON.stringify(inventoryItems));
+            localStorage.setItem('categories', JSON.stringify(categories));
+            localStorage.setItem('sectors', JSON.stringify(sectors));
+            console.log("Dados salvos no Local Storage.");
         }
 
-        // Evento de login
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            showMainInterface();
-        });
-
-        // Adiciona botão Editar Perfil na tela de login
-        const loginForm = document.getElementById('loginForm');
-        const editarPerfilBtn = document.createElement('button');
-        editarPerfilBtn.type = 'button';
-        editarPerfilBtn.innerHTML = '<i class="fas fa-user-cog"></i> Editar Perfil';
-        editarPerfilBtn.style.marginTop = '0.7rem';
-        editarPerfilBtn.onclick = function() { abrirModalEditarPerfil(); };
-        loginForm.appendChild(editarPerfilBtn);
-
-        // Validação e registro com e-mail obrigatório
-        const registerForm = document.getElementById('registerForm');
-        registerForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const usuario = document.getElementById('newUser').value.trim();
-            const email = document.getElementById('newEmail').value.trim().toLowerCase();
-            const senha = document.getElementById('newPassword').value;
-            const fotoDataURL = localStorage.getItem('tempRegPhoto') || "";
-            if (!usuario || !email || !senha) {
-                alert('Preencha todos os campos obrigatórios.');
-                return;
-            }
-            if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
-                alert('Digite um e-mail válido.');
-                return;
-            }
-            let usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
-            if (usuarios.some(u => u.usuario === usuario)) {
-                alert('Nome de usuário já existe. Escolha outro.');
-                return;
-            }
-            if (usuarios.some(u => u.email === email)) {
-                alert('E-mail já cadastrado. Use outro.');
-                return;
-            }
-            usuarios.push({ usuario, email, senha, foto: fotoDataURL });
-            localStorage.setItem('usuarios', JSON.stringify(usuarios));
-            if (fotoDataURL) {
-                localStorage.setItem('userphoto_' + usuario, fotoDataURL);
-                localStorage.removeItem('tempRegPhoto');
-            }
-            alert('Usuário registrado com sucesso! Faça login.');
-            toggleRegister();
-        });
-
-        // Modal Editar Perfil
-        function abrirModalEditarPerfil() {
-            document.getElementById('modalEditarPerfil').classList.add('active');
-            document.getElementById('modalEditarPerfil').classList.remove('hidden');
-            document.getElementById('formAutenticarPerfil').classList.remove('hidden');
-            document.getElementById('formEditarPerfil').classList.add('hidden');
-            document.getElementById('formAutenticarPerfil').reset();
-            document.getElementById('formEditarPerfil').reset();
-            removerFotoEditar();
-        }
-        function fecharModalEditarPerfil() {
-            document.getElementById('modalEditarPerfil').classList.remove('active');
-            document.getElementById('modalEditarPerfil').classList.add('hidden');
-        }
-        // Autenticação para edição
-        let usuarioEditando = null;
-        document.getElementById('formAutenticarPerfil').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const email = document.getElementById('editEmailLogin').value.trim().toLowerCase();
-            const senha = document.getElementById('editSenhaLogin').value;
-            let usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
-            const usuario = usuarios.find(u => u.email === email && u.senha === senha);
-            if (!usuario) {
-                alert('E-mail ou senha incorretos.');
-                return;
-            }
-            usuarioEditando = usuario;
-            document.getElementById('formAutenticarPerfil').classList.add('hidden');
-            document.getElementById('formEditarPerfil').classList.remove('hidden');
-            document.getElementById('editNome').value = usuario.usuario;
-            document.getElementById('editEmail').value = usuario.email;
-            document.getElementById('editSenha').value = usuario.senha;
-            if (usuario.foto) {
-                document.getElementById('editPhotoPreview').src = usuario.foto;
-                document.getElementById('editPhotoPreview').style.display = '';
+        function loadDataFromLocalStorage() {
+            const storedAdminProfile = localStorage.getItem('adminProfile');
+            if (storedAdminProfile) {
+                adminProfile = JSON.parse(storedAdminProfile);
             } else {
-                removerFotoEditar();
+                adminProfile = null; // Garante que seja null se não houver perfil
             }
-        });
-        // Salvar edição de perfil
-        const formEditarPerfil = document.getElementById('formEditarPerfil');
-        formEditarPerfil.addEventListener('submit', function(e) {
-            e.preventDefault();
-            let usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
-            const novoNome = document.getElementById('editNome').value.trim();
-            const novoEmail = document.getElementById('editEmail').value.trim().toLowerCase();
-            const novaSenha = document.getElementById('editSenha').value;
-            const novaFoto = localStorage.getItem('tempEditPhoto') || usuarioEditando.foto || '';
-            if (!novoNome || !novoEmail || !novaSenha) {
-                alert('Preencha todos os campos obrigatórios.');
+
+            const storedItems = localStorage.getItem('inventoryItems');
+            if (storedItems) {
+                inventoryItems = JSON.parse(storedItems);
+            } else {
+                // Dados iniciais se não houver nada no Local Storage
+                inventoryItems = [
+                    { id: 1, name: "Notebook Dell XPS 15", description: "Laptop de alta performance", serialNumber: "SN001", acquisitionDate: "2023-01-15", value: 8500.00, status: "Em uso", category: "Eletrônicos", sector: "TI", quantity: 5, itemPhoto: "https://placehold.co/100x100/3498DB/ffffff?text=NB" },
+                    { id: 2, name: "Cadeira Ergonômica", description: "Cadeira para escritório com suporte lombar", serialNumber: "SN002", acquisitionDate: "2022-05-20", value: 1200.00, status: "Em estoque", category: "Móveis", sector: "Escritório", quantity: 10, itemPhoto: "https://placehold.co/100x100/2ECC71/ffffff?text=CD" },
+                    { id: 3, name: "Monitor Ultrawide LG", description: "Monitor de 34 polegadas para design", serialNumber: "SN003", acquisitionDate: "2023-03-10", value: 2500.00, status: "Em uso", category: "Eletrônicos", sector: "Design", quantity: 3, itemPhoto: "https://placehold.co/100x100/F39C12/ffffff?text=MN" },
+                    { id: 4, name: "Impressora Multifuncional HP", description: "Impressora a laser colorida", serialNumber: "SN004", acquisitionDate: "2023-02-01", value: 800.00, status: "Em estoque", category: "Periféricos", sector: "Administrativo", quantity: 2, itemPhoto: "https://placehold.co/100x100/E74C3C/ffffff?text=IM" }
+                ];
+            }
+
+            const storedCategories = localStorage.getItem('categories');
+            if (storedCategories) {
+                categories = JSON.parse(storedCategories);
+            } else {
+                categories = [
+                    { id: 1, name: "Eletrônicos" },
+                    { id: 2, name: "Móveis" },
+                    { id: 3, name: "Periféricos" },
+                    { id: 4, name: "Material de Escritório" }
+                ];
+            }
+
+            const storedSectors = localStorage.getItem('sectors');
+            if (storedSectors) {
+                sectors = JSON.parse(storedSectors);
+            } else {
+                sectors = [
+                    { id: 1, name: "TI" },
+                    { id: 2, name: "Escritório" },
+                    { id: 3, name: "Design" },
+                    { id: 4, name: "Administrativo" },
+                    { id: 5, name: "Financeiro" }
+                ];
+            }
+            console.log("Dados carregados do Local Storage.");
+        }
+
+        // --- Funções Auxiliares de Alerta/Confirmação ---
+
+        // Função para exibir mensagens de erro nos formulários
+        function showError(elementId, message) {
+            const errorElement = document.getElementById(elementId);
+            if (errorElement) {
+                errorElement.textContent = message;
+                errorElement.classList.remove('hidden');
+            }
+        }
+
+        // Função para ocultar mensagens de erro nos formulários
+        function hideError(elementId) {
+            const errorElement = document.getElementById(elementId);
+            if (errorElement) {
+                errorElement.classList.add('hidden');
+            }
+        }
+
+        // Função para mostrar o modal de alerta customizado
+        function showAlert(title, message, onOkCallback = null) {
+            customAlertTitle.textContent = title;
+            customAlertMessage.textContent = message;
+            customAlertButtons.innerHTML = ''; // Limpa botões anteriores
+            const okButton = document.createElement('button');
+            okButton.id = 'customAlertOkButton';
+            okButton.className = 'custom-alert-button';
+            okButton.textContent = 'OK';
+            okButton.addEventListener('click', () => {
+                hideAlertDialog();
+                if (onOkCallback) onOkCallback();
+            });
+            customAlertButtons.appendChild(okButton);
+            customAlertDialog.classList.add('show');
+        }
+
+        // Função para mostrar o modal de confirmação customizado
+        function showConfirmDialog(title, message, onConfirmCallback, onCancelCallback = null) {
+            customAlertTitle.textContent = title;
+            customAlertMessage.textContent = message;
+            customAlertButtons.innerHTML = ''; // Limpa botões anteriores
+
+            const confirmButton = document.createElement('button');
+            confirmButton.className = 'custom-alert-button';
+            confirmButton.textContent = 'Confirmar';
+            confirmButton.addEventListener('click', () => {
+                hideAlertDialog();
+                if (onConfirmCallback) onConfirmCallback();
+            });
+            customAlertButtons.appendChild(confirmButton);
+
+            const cancelButton = document.createElement('button');
+            cancelButton.className = 'custom-alert-button cancel';
+            cancelButton.textContent = 'Cancelar';
+            cancelButton.addEventListener('click', () => {
+                hideAlertDialog();
+                if (onCancelCallback) onCancelCallback();
+            });
+            customAlertButtons.appendChild(cancelButton);
+
+            customAlertDialog.classList.add('show');
+        }
+
+        // Função para ocultar o modal de alerta/confirmação
+        function hideAlertDialog() {
+            customAlertDialog.classList.remove('show');
+        }
+
+        // --- Funções de Renderização de Telas Principais ---
+
+        // Função para renderizar a tela de apresentação
+        function renderPresentationScreen() {
+            appDiv.className = 'app-container'; // Garante que o container principal tenha o estilo padrão
+            appDiv.innerHTML = `
+                <!-- Replace the emoji icon with an image. You can change the 'src' attribute to your image URL. -->
+                <img src="imagens\logo2.png" alt="Logo do Sistema" class="icon-image">
+                <h1 class="title">Onde Estou?</h1>
+                <h2 class="title">Controle de Inventário</h2>
+                <p class="slogan">Organize seu mundo, encontre tudo o que precisa.</p>
+                <button id="enterButton" class="button-base btn-primary">Entrar</button>
+            `;
+            document.getElementById('enterButton').addEventListener('click', renderLoginScreen);
+        }
+
+        // Função para renderizar a tela de login
+        function renderLoginScreen() {
+            appDiv.className = 'app-container'; // Garante que o container principal tenha o estilo padrão
+            appDiv.innerHTML = `
+                <h1 class="title text-2xl mb-6">Login</h1>
+                <input type="email" id="username" placeholder="E-mail do Administrador" class="input-field">
+                <input type="password" id="password" placeholder="Senha" class="input-field">
+                <button id="loginButton" class="button-base btn-primary">Entrar</button>
+                <button id="createAdminProfileButton" class="button-base btn-success mt-4 ${adminProfile ? 'hidden' : ''}">Criar Perfil Administrador</button>
+                <button id="backToPresentation" class="button-base bg-gray-200 text-gray-700 hover:bg-gray-300">Voltar</button>
+            `;
+
+            document.getElementById('loginButton').addEventListener('click', handleLogin);
+            document.getElementById('backToPresentation').addEventListener('click', renderPresentationScreen);
+
+            const createAdminProfileButton = document.getElementById('createAdminProfileButton');
+            if (createAdminProfileButton && !adminProfile) {
+                createAdminProfileButton.addEventListener('click', () => showCreateProfileModal(false)); // False para indicar criação
+            }
+        }
+
+        // Função para lidar com o login
+        function handleLogin() {
+            const email = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+
+            if (!email || !password) {
+                showAlert('Erro de Login', 'Por favor, insira seu e-mail e senha.');
                 return;
             }
-            if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(novoEmail)) {
-                alert('Digite um e-mail válido.');
-                return;
-            }
-            // Verifica duplicidade de e-mail e nome (exceto o próprio)
-            if (usuarios.some(u => u.email === novoEmail && u !== usuarioEditando)) {
-                alert('E-mail já cadastrado. Use outro.');
-                return;
-            }
-            if (usuarios.some(u => u.usuario === novoNome && u !== usuarioEditando)) {
-                alert('Nome de usuário já existe. Escolha outro.');
-                return;
-            }
-            // Atualiza dados
-            usuarioEditando.usuario = novoNome;
-            usuarioEditando.email = novoEmail;
-            usuarioEditando.senha = novaSenha;
-            usuarioEditando.foto = novaFoto;
-            localStorage.setItem('usuarios', JSON.stringify(usuarios));
-            if (novaFoto) {
-                localStorage.setItem('userphoto_' + novoNome, novaFoto);
-                localStorage.removeItem('tempEditPhoto');
-            }
-            alert('Perfil atualizado com sucesso!');
-            fecharModalEditarPerfil();
-        });
-        // Foto editar perfil
-        function abrirCameraEditar() {
-            const video = document.getElementById('editCameraVideo');
-            const tirarFotoBtn = document.getElementById('tirarFotoBtnEditar');
-            video.style.display = '';
-            tirarFotoBtn.style.display = '';
-            document.getElementById('editPhotoPreview').style.display = 'none';
-            // Corrige: para evitar múltiplos streams, para o anterior
-            if (video._stream) {
-                video._stream.getTracks().forEach(track => track.stop());
-                video._stream = null;
-            }
-            navigator.mediaDevices.getUserMedia({ video: true })
-                .then(function(stream) {
-                    video.srcObject = stream;
-                    video._stream = stream;
-                })
-                .catch(function(err) {
-                    alert('Não foi possível acessar a câmera: ' + err);
-                    fecharCameraEditar();
+
+            if (adminProfile && adminProfile.email === email && adminProfile.password === password) {
+                loggedInUser = adminProfile; // Define o usuário logado como o adminProfile
+                showAlert('Sucesso!', 'Login realizado com sucesso! Redirecionando para o Dashboard.', () => {
+                    renderMainDashboard();
                 });
-        }
-        function tirarFotoEditar() {
-            const video = document.getElementById('editCameraVideo');
-            const canvas = document.createElement('canvas');
-            canvas.width = video.videoWidth || 240;
-            canvas.height = video.videoHeight || 240;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-            const dataURL = canvas.toDataURL('image/png');
-            mostrarFotoPreviewEditar(dataURL);
-            fecharCameraEditar();
-            localStorage.setItem('tempEditPhoto', dataURL);
-        }
-        function fecharCameraEditar() {
-            const video = document.getElementById('editCameraVideo');
-            const tirarFotoBtn = document.getElementById('tirarFotoBtnEditar');
-            video.style.display = 'none';
-            tirarFotoBtn.style.display = 'none';
-            if (video._stream) {
-                video._stream.getTracks().forEach(track => track.stop());
-                video._stream = null;
+            } else {
+                showAlert('Erro de Login', 'E-mail ou senha incorretos.');
             }
-            video.srcObject = null;
         }
-        function uploadFotoEditar(event) {
-            const file = event.target.files[0];
-            if (file && file.type.startsWith('image/')) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    mostrarFotoPreviewEditar(e.target.result);
-                    localStorage.setItem('tempEditPhoto', e.target.result);
+
+        // Função para renderizar o dashboard principal
+        function renderMainDashboard() {
+            appDiv.className = 'dashboard-container'; // Altera a classe do container para o estilo do dashboard
+            appDiv.innerHTML = `
+                <header class="dashboard-header">
+                    <div class="user-info">
+                        <img src="${loggedInUser.photo || 'https://placehold.co/100x100/BDC3C7/ffffff?text=User'}" alt="Avatar do Usuário" class="user-avatar">
+                        <span class="user-name">Olá, ${loggedInUser.name}!</span>
+                    </div>
+                    <div class="flex gap-2">
+                        <button id="editAdminProfileButton" class="button-base btn-info !w-auto">Editar Perfil</button>
+                        <button id="deleteAdminProfileButton" class="button-base btn-danger !w-auto">Excluir Perfil</button>
+                        <button id="logoutButton" class="button-base logout-button !w-auto">Sair</button>
+                    </div>
+                </header>
+                <main class="dashboard-main">
+                    <nav class="dashboard-sidebar">
+                        <div id="navOverview" class="sidebar-item active">Visão Geral</div>
+                        <div id="navItems" class="sidebar-item">Itens de Inventário</div>
+                        <div id="navCategories" class="sidebar-item">Categorias</div>
+                        <div id="navSectors" class="sidebar-item">Setores</div>
+                        <div id="navReports" class="sidebar-item">Relatórios</div>
+                    </nav>
+                    <section id="dashboardContent" class="dashboard-content">
+                        <!-- Conteúdo da seção será carregado aqui -->
+                        <h2 id="contentTitle"></h2>
+                        <div id="sectionContent"></div>
+                    </section>
+                </main>
+            `;
+
+            // Adicionar event listeners para os botões de navegação do dashboard
+            document.getElementById('logoutButton').addEventListener('click', handleLogout);
+            document.getElementById('editAdminProfileButton').addEventListener('click', () => showCreateProfileModal(true)); // Passa true para indicar edição
+            document.getElementById('deleteAdminProfileButton').addEventListener('click', handleDeleteProfile);
+
+            const navOverview = document.getElementById('navOverview');
+            const navItems = document.getElementById('navItems');
+            const navCategories = document.getElementById('navCategories');
+            const navSectors = document.getElementById('navSectors');
+            const navReports = document.getElementById('navReports');
+            const sectionContent = document.getElementById('sectionContent');
+            const contentTitle = document.getElementById('contentTitle');
+
+            // Função para mudar o conteúdo do dashboard
+            function changeDashboardContent(section) {
+                // Remove a classe 'active' de todos os itens da sidebar
+                document.querySelectorAll('.sidebar-item').forEach(item => item.classList.remove('active'));
+
+                let title = '';
+                let contentHtml = '';
+
+                switch (section) {
+                    case 'overview':
+                        navOverview.classList.add('active');
+                        title = 'Visão Geral do Inventário';
+                        contentHtml = renderOverview();
+                        sectionContent.innerHTML = contentHtml;
+                        break;
+                    case 'items':
+                        navItems.classList.add('active');
+                        title = 'Itens de Inventário';
+                        contentHtml = `<div id="tempItemContent"></div>`; // Placeholder
+                        sectionContent.innerHTML = contentHtml;
+                        _initInventoryItemsTableListeners(); // Initialize table and listeners
+                        break;
+                    case 'categories':
+                        navCategories.classList.add('active');
+                        title = 'Categorias';
+                        contentHtml = `<div id="tempCategoryContent"></div>`; // Placeholder
+                        sectionContent.innerHTML = contentHtml;
+                        _initCategoriesTableListeners(); // Initialize table and listeners
+                        break;
+                    case 'sectors':
+                        navSectors.classList.add('active');
+                        title = 'Setores';
+                        contentHtml = `<div id="tempSectorContent"></div>`; // Placeholder
+                        sectionContent.innerHTML = contentHtml;
+                        _initSectorsTableListeners(); // Initialize table and listeners
+                        break;
+                    case 'reports':
+                        navReports.classList.add('active');
+                        title = 'Relatórios';
+                        contentHtml = renderReports();
+                        sectionContent.innerHTML = contentHtml;
+                        // For reports, add listeners directly after rendering
+                        document.getElementById('generateReportBtn').addEventListener('click', () => {
+                            const categoryFilter = document.getElementById('reportCategoryFilter').value;
+                            const sectorFilter = document.getElementById('reportSectorFilter').value;
+
+                            let filteredReportItems = inventoryItems;
+                            if (categoryFilter) {
+                                filteredReportItems = filteredReportItems.filter(item => item.category === categoryFilter);
+                            }
+                            if (sectorFilter) {
+                                filteredReportItems = filteredReportItems.filter(item => item.sector === sectorFilter);
+                            }
+
+                            showAlert('Relatório Gerado', `Relatório com ${filteredReportItems.length} itens filtrados por Categoria: "${categoryFilter || 'Todas'}" e Setor: "${sectorFilter || 'Todos'}". (Dados no console)`, () => {
+                                console.log('Relatório de Itens:', filteredReportItems);
+                                // Aqui você poderia implementar a lógica real de exportação para CSV/PDF
+                            });
+                        });
+                        break;
                 }
-                reader.readAsDataURL(file);
-            }
-            event.target.value = "";
-        }
-        function mostrarFotoPreviewEditar(dataURL) {
-            const preview = document.getElementById('editPhotoPreview');
-            preview.src = dataURL;
-            preview.style.display = '';
-        }
-        function removerFotoEditar() {
-            document.getElementById('editPhotoPreview').src = '';
-            document.getElementById('editPhotoPreview').style.display = 'none';
-            localStorage.removeItem('tempEditPhoto');
-        }
-        // Fecha modal ao clicar fora
-        window.addEventListener('click', function(event) {
-            const modal = document.getElementById('modalEditarPerfil');
-            if (event.target === modal) fecharModalEditarPerfil();
-        });
-        // Excluir perfil
-        const btnExcluirPerfil = document.getElementById('btnExcluirPerfil');
-        btnExcluirPerfil.addEventListener('click', function() {
-            const senha = prompt('Digite sua senha para confirmar a exclusão do perfil:');
-            if (!senha) return;
-            if (senha !== usuarioEditando.senha) {
-                alert('Senha incorreta.');
-                return;
-            }
-            let usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
-            usuarios = usuarios.filter(u => u !== usuarioEditando);
-            localStorage.setItem('usuarios', JSON.stringify(usuarios));
-            localStorage.removeItem('userphoto_' + usuarioEditando.usuario);
-            alert('Perfil excluído com sucesso!');
-            fecharModalEditarPerfil();
-        });
-        // Gerenciamento de Inventário
-        const equipmentForm = document.getElementById('equipmentForm');
-        let hasUnsavedChanges = false;
-
-        equipmentForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const dados = JSON.parse(localStorage.getItem('inventario')) || [];
-            const newEntry = {
-                item: document.getElementById('itemName').value,
-                date: document.getElementById('registrationDate').value,
-                location: document.getElementById('location').value,
-                maintenance: document.getElementById('lastMaintenance').value,
-                category: document.getElementById('category').value,
-                value: document.getElementById('value').value,
-                observations: document.getElementById('observations').value
-            };
-
-            if(editIndex !== null) {
-                dados[editIndex] = newEntry;
-                editIndex = null;
-            } else {
-                dados.push(newEntry);
+                contentTitle.textContent = title;
             }
 
-            localStorage.setItem('inventario', JSON.stringify(dados));
-            equipmentForm.reset();
-            hasUnsavedChanges = false;
-            localStorage.removeItem('draft');
-        });
+            navOverview.addEventListener('click', () => changeDashboardContent('overview'));
+            navItems.addEventListener('click', () => changeDashboardContent('items'));
+            navCategories.addEventListener('click', () => changeDashboardContent('categories'));
+            navSectors.addEventListener('click', () => changeDashboardContent('sectors'));
+            navReports.addEventListener('click', () => changeDashboardContent('reports'));
 
-        // Função para adicionar categoria
-        function adicionarCategoria() {
-            const novaCategoria = prompt('Digite o nome da nova categoria:');
-            if (novaCategoria) {
-                const select = document.getElementById('category');
-                const option = document.createElement('option');
-                option.value = novaCategoria;
-                option.text = novaCategoria;
-                select.add(option);
-            }
+            // Carrega a seção de visão geral por padrão
+            changeDashboardContent('overview');
         }
 
-        // Função para editar categoria
-        function editarCategoria() {
-            const select = document.getElementById('category');
-            const selectedIndex = select.selectedIndex;
-            if (selectedIndex === 0) {
-                alert('Selecione uma categoria para editar.');
-                return;
-            }
-
-            const novoNome = prompt('Digite o novo nome da categoria:');
-            if (novoNome) {
-                select.options[selectedIndex].text = novoNome;
-                select.options[selectedIndex].value = novoNome;
-            }
-        }
-
-        // Função para excluir categoria
-        function excluirCategoria() {
-            const select = document.getElementById('category');
-            const selectedIndex = select.selectedIndex;
-            if (selectedIndex === 0) {
-                alert('Selecione uma categoria para excluir.');
-                return;
-            }
-
-            if (confirm(`Deseja realmente excluir a categoria "${select.options[selectedIndex].text}"?`)) {
-                select.remove(selectedIndex);
-            }
-        }
-
-        // Função para mostrar a interface principal
-        function showMainInterface() {
-            document.getElementById('loginContainer').style.display = 'none';
-            document.getElementById('mainContainer').style.display = 'block';
-            loadDraft();
-            // Exibir nome e foto do usuário logado
-            const username = document.getElementById('username').value;
-            let usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
-            let usuario = usuarios.find(u => u.usuario === username);
-            document.getElementById('userNameHeader').textContent = username || '';
-            const foto = usuario && usuario.foto ? usuario.foto : '';
-            const fotoEl = document.getElementById('userPhotoHeader');
-            if (foto) {
-                fotoEl.src = foto;
-                fotoEl.style.display = '';
-            } else {
-                fotoEl.src = '';
-                fotoEl.style.display = 'none';
-            }
-        }
-
-        // Função para excluir item
-        function excluirItem(index) {
-            if(confirm('Deseja realmente excluir este item permanentemente?')) {
-                const dados = JSON.parse(localStorage.getItem('inventario')) || [];
-                dados.splice(index, 1);
-                localStorage.setItem('inventario', JSON.stringify(dados));
-            }
-        }
-
-        // Função para editar item
-        function editarItem(index) {
-            const dados = JSON.parse(localStorage.getItem('inventario')) || [];
-            const item = dados[index];
-            
-            document.getElementById('itemName').value = item.item;
-            document.getElementById('registrationDate').value = item.date;
-            document.getElementById('location').value = item.location;
-            document.getElementById('lastMaintenance').value = item.maintenance;
-            document.getElementById('category').value = item.category;
-            document.getElementById('value').value = item.value;
-            document.getElementById('observations').value = item.observations;
-            
-            editIndex = index;
-            window.scrollTo(0, 0);
-        }
-
-        // Função para sair do sistema
-        function handleSair() {
-            if (hasUnsavedChanges) {
-                const confirmSave = confirm('Deseja salvar o rascunho antes de sair?');
-                if (confirmSave) saveDraft();
-            }
-            document.getElementById('mainContainer').style.display = 'none';
-            document.getElementById('loginContainer').style.display = 'block';
-            equipmentForm.reset();
-            hasUnsavedChanges = false;
-        }
-
-        // Função para salvar rascunho
-        function saveDraft() {
-            const draft = {
-                item: document.getElementById('itemName').value,
-                date: document.getElementById('registrationDate').value,
-                location: document.getElementById('location').value,
-                maintenance: document.getElementById('lastMaintenance').value,
-                category: document.getElementById('category').value,
-                value: document.getElementById('value').value,
-                observations: document.getElementById('observations').value
-            };
-            localStorage.setItem('draft', JSON.stringify(draft));
-            alert('Rascunho salvo com sucesso!');
-        }
-
-        // Função para carregar rascunho
-        function loadDraft() {
-            const draft = JSON.parse(localStorage.getItem('draft'));
-            if (draft) {
-                document.getElementById('itemName').value = draft.item || '';
-                document.getElementById('registrationDate').value = draft.date || '';
-                document.getElementById('location').value = draft.location || '';
-                document.getElementById('lastMaintenance').value = draft.maintenance || '';
-                document.getElementById('category').value = draft.category || '';
-                document.getElementById('value').value = draft.value || '';
-                document.getElementById('observations').value = draft.observations || '';
-                hasUnsavedChanges = true;
-            }
-        }
-
-        // Função para exportar planilha
-        function exportarPlanilhaCompleta() {
-            const itens = JSON.parse(localStorage.getItem('inventario')) || [];
-            const csvItens = [
-                ['=== ITENS CADASTRADOS ==='],
-                ['Item;Data;Local;Manutenção;Categoria;Valor;Observações'],
-                ...itens.map(item => [
-                    item.item,
-                    item.date,
-                    item.location,
-                    item.maintenance,
-                    item.category,
-                    item.value,
-                    item.observations
-                ].join(';'))
-            ];
-
-            const csvContent = csvItens.join('\n');
-            const blob = new Blob(["\ufeff" + csvContent], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = `Inventario_${new Date().toISOString().split('T')[0]}.csv`;
-            link.click();
-
-            const notice = document.getElementById('exportNotice');
-            notice.textContent = 'Planilha gerada com sucesso!';
-            notice.style.display = 'block';
-            setTimeout(() => notice.style.display = 'none', 2000);
-        }
-
-        // Função para abrir o modal e carregar os itens
-        function abrirModalItens() {
-            document.getElementById('modalItens').classList.add('active');
-            document.getElementById('modalItens').classList.remove('hidden');
-            carregarItensModal();
-        }
-
-        // Função para fechar o modal
-        function fecharModalItens() {
-            document.getElementById('modalItens').classList.remove('active');
-            document.getElementById('modalItens').classList.add('hidden');
-        }
-
-        // Carregar itens no modal
-        function carregarItensModal() {
-            const dados = JSON.parse(localStorage.getItem('inventario')) || [];
-            const modalInventoryBody = document.getElementById('modalInventoryBody');
-            modalInventoryBody.innerHTML = '';
-            dados.forEach((entry, index) => {
-                const newRow = document.createElement('tr');
-                newRow.setAttribute('data-index', index);
-                newRow.innerHTML = `
-                    <td>${entry.item}</td>
-                    <td>${entry.date}</td>
-                    <td>${entry.location}</td>
-                    <td>${entry.maintenance}</td>
-                    <td>${entry.category}</td>
-                    <td>R$ ${parseFloat(entry.value).toFixed(2)}</td>
-                    <td>
-                        <div class="action-buttons">
-                            <button class="btn-editar" onclick="editarItem(${index}); fecharModalItens();"><i class="fas fa-edit"></i></button>
-                            <button class="btn-excluir" onclick="excluirItemModal(${index});"><i class="fas fa-trash"></i></button>
-                        </div>
-                    </td>
-                `;
-                modalInventoryBody.appendChild(newRow);
+        // Função para lidar com o logout
+        function handleLogout() {
+            loggedInUser = null; // Limpa o usuário logado
+            showAlert('Logout', 'Você foi desconectado com sucesso.', () => {
+                renderLoginScreen(); // Redireciona para a tela de login
             });
         }
 
-        // Função específica para exclusão via modal (atualiza o modal após excluir)
-        function excluirItemModal(index) {
-            excluirItem(index);
-            carregarItensModal();
+        // Função para lidar com a exclusão do perfil do administrador
+        function handleDeleteProfile() {
+            showConfirmDialog('Confirmar Exclusão', 'Tem certeza que deseja excluir o perfil do administrador? Esta ação é irreversível e removerá o único acesso ao sistema.', () => {
+                localStorage.removeItem('adminProfile'); // Remove o perfil do Local Storage
+                adminProfile = null; // Limpa o perfil da memória
+                loggedInUser = null; // Garante que não há usuário logado
+                showAlert('Perfil Excluído', 'O perfil do administrador foi removido com sucesso. Você será redirecionado para a tela inicial.', () => {
+                    renderPresentationScreen(); // Redireciona para a tela de apresentação
+                });
+            });
         }
 
-        // Fechar modal ao clicar fora do conteúdo
-        window.onclick = function(event) {
-            const modal = document.getElementById('modalItens');
-            if (event.target === modal) fecharModalItens();
+        // --- Funções de Renderização de Conteúdo do Dashboard (com dados e botões CRUD) ---
+
+        function renderOverview() {
+            const totalItems = inventoryItems.length;
+            const totalCategories = categories.length;
+            const totalSectors = sectors.length;
+            const lowStockItems = inventoryItems.filter(item => item.quantity < 3); // Exemplo: itens com menos de 3 unidades
+
+            return `
+                <div class="overview-grid">
+                    <div class="overview-card">
+                        <span class="card-icon">📦</span>
+                        <div class="card-value">${totalItems}</div>
+                        <div class="card-title">Total de Itens</div>
+                    </div>
+                    <div class="overview-card">
+                        <span class="card-icon">🏷️</span>
+                        <div class="card-value">${totalCategories}</div>
+                        <div class="card-title">Total de Categorias</div>
+                    </div>
+                    <div class="overview-card">
+                        <span class="card-icon">🏢</span>
+                        <div class="card-value">${totalSectors}</div>
+                        <div class="card-title">Total de Setores</div>
+                    </div>
+                    <div class="overview-card ${lowStockItems.length > 0 ? 'alert' : ''}">
+                        <span class="card-icon">⚠️</span>
+                        <div class="card-value">${lowStockItems.length}</div>
+                        <div class="card-title">Itens com Baixo Estoque</div>
+                    </div>
+                </div>
+                ${lowStockItems.length > 0 ? `
+                    <h3 class="text-xl font-semibold text-red-600 mt-8 mb-4">Itens Precisando de Atenção:</h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nome</th>
+                                <th>Quantidade</th>
+                                <th>Setor</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${lowStockItems.map(item => `
+                                <tr>
+                                    <td>${item.id}</td>
+                                    <td>${item.name}</td>
+                                    <td><span class="font-bold text-red-500">${item.quantity}</span></td>
+                                    <td>${item.sector}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                ` : ''}
+            `;
         }
 
-        // Inicialização
-        document.getElementById('mainContainer').style.display = 'none';
+        // New function to handle rendering and listeners for Inventory Items table
+        function _initInventoryItemsTableListeners() {
+            const itemsPerPage = 5;
+            let currentPage = 1;
+            let currentSortColumn = null;
+            let currentSortDirection = 'asc';
+            let currentSearchTerm = '';
 
-        // ----------- CÂMERA E FOTO NO REGISTRO ---------------
-let cameraStream = null;
+            function updateTable() {
+                let filteredItems = inventoryItems.filter(item =>
+                    item.name.toLowerCase().includes(currentSearchTerm.toLowerCase()) ||
+                    item.category.toLowerCase().includes(currentSearchTerm.toLowerCase()) ||
+                    item.sector.toLowerCase().includes(currentSearchTerm.toLowerCase())
+                );
 
-function abrirCamera() {
-    const video = document.getElementById('regCameraVideo');
-    const tirarFotoBtn = document.getElementById('tirarFotoBtn');
-    tirarFotoBtn.style.display = 'block';
-    video.style.display = 'block';
-    document.getElementById('regPhotoPreview').style.display = 'none';
-    // Para stream anterior, se houver
-    if (cameraStream) {
-        cameraStream.getTracks().forEach(track => track.stop());
-        cameraStream = null;
-    }
-    navigator.mediaDevices.getUserMedia({ video: true })
-        .then(function(stream) {
-            cameraStream = stream;
-            video.srcObject = stream;
-            video.play();
-            tirarFotoBtn.disabled = false;
-        })
-        .catch(function(err) {
-            tirarFotoBtn.disabled = true;
-            alert('Não foi possível acessar a câmera: ' + err);
-            fecharCamera();
+                if (currentSortColumn) {
+                    filteredItems.sort((a, b) => {
+                        const valA = a[currentSortColumn];
+                        const valB = b[currentSortColumn];
+
+                        if (typeof valA === 'string') {
+                            return currentSortDirection === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA);
+                        }
+                        return currentSortDirection === 'asc' ? valA - valB : valB - valA;
+                    });
+                }
+
+                const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
+                const startIndex = (currentPage - 1) * itemsPerPage;
+                const endIndex = startIndex + itemsPerPage;
+                const paginatedItems = filteredItems.slice(startIndex, endIndex);
+
+                let itemsHtml = `
+                    <div class="search-container">
+                        <input type="text" id="itemSearchInput" class="input-field" placeholder="Pesquisar itens..." value="${currentSearchTerm}">
+                        <button id="clearSearchBtn" class="button-base btn-info !w-auto">Limpar</button>
+                    </div>
+                    <div class="crud-buttons-container">
+                        <button id="addItemBtn" class="button-base btn-success">Cadastrar Item</button>
+                    </div>
+                    <table class="data-table responsive-table">
+                        <thead>
+                            <tr>
+                                <th data-sort="id">ID</th>
+                                <th data-sort="name">Nome</th>
+                                <th data-sort="category">Categoria</th>
+                                <th data-sort="sector">Setor</th>
+                                <th data-sort="quantity">Quantidade</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                if (paginatedItems.length === 0) {
+                    itemsHtml += `
+                        <tr>
+                            <td colspan="6" class="text-center text-gray-500 italic">Nenhum item encontrado.</td>
+                        </tr>
+                    `;
+                } else {
+                    paginatedItems.forEach(item => {
+                        itemsHtml += `
+                            <tr>
+                                <td data-label="ID">${item.id}</td>
+                                <td data-label="Nome">${item.name}</td>
+                                <td data-label="Categoria">${item.category}</td>
+                                <td data-label="Setor">${item.sector}</td>
+                                <td data-label="Quantidade">${item.quantity}</td>
+                                <td data-label="Ações" class="action-buttons">
+                                    <button data-id="${item.id}" class="button-base btn-info edit-item-btn">Editar</button>
+                                    <button data-id="${item.id}" class="button-base btn-danger delete-item-btn">Excluir</button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                }
+                itemsHtml += `
+                        </tbody>
+                    </table>
+                    <div class="pagination-controls">
+                        <button id="prevPageBtn" ${currentPage === 1 ? 'disabled' : ''}>Anterior</button>
+                        <span>Página ${currentPage} de ${totalPages || 1}</span>
+                        <button id="nextPageBtn" ${currentPage === totalPages || totalPages === 0 ? 'disabled' : ''}>Próxima</button>
+                    </div>
+                `;
+                document.getElementById('sectionContent').innerHTML = itemsHtml; // This is the crucial line
+
+                // Now attach all event listeners AFTER the HTML is rendered
+                document.getElementById('addItemBtn').addEventListener('click', () => showCrudModal('item'));
+                document.querySelectorAll('.edit-item-btn').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const id = parseInt(e.target.dataset.id);
+                        const itemToEdit = inventoryItems.find(item => item.id === id);
+                        if (itemToEdit) {
+                            showCrudModal('item', itemToEdit);
+                        }
+                    });
+                });
+                document.querySelectorAll('.delete-item-btn').forEach(button => {
+                    button.addEventListener('click', (e) => deleteItem(parseInt(e.target.dataset.id)));
+                });
+
+                document.querySelectorAll('.data-table th[data-sort]').forEach(header => {
+                    header.addEventListener('click', () => {
+                        const column = header.dataset.sort;
+                        if (currentSortColumn === column) {
+                            currentSortDirection = currentSortDirection === 'asc' ? 'desc' : 'asc';
+                        } else {
+                            currentSortColumn = column;
+                            currentSortDirection = 'asc';
+                        }
+                        updateTable();
+                    });
+                });
+
+                document.getElementById('prevPageBtn').addEventListener('click', () => {
+                    if (currentPage > 1) {
+                        currentPage--;
+                        updateTable();
+                    }
+                });
+                document.getElementById('nextPageBtn').addEventListener('click', () => {
+                    if (currentPage < totalPages) {
+                        currentPage++;
+                        updateTable();
+                    }
+                });
+
+                const itemSearchInput = document.getElementById('itemSearchInput');
+                itemSearchInput.addEventListener('input', () => {
+                    currentSearchTerm = itemSearchInput.value;
+                    currentPage = 1;
+                    updateTable();
+                });
+                document.getElementById('clearSearchBtn').addEventListener('click', () => {
+                    currentSearchTerm = '';
+                    itemSearchInput.value = '';
+                    currentPage = 1;
+                    updateTable();
+                });
+            }
+            updateTable(); // Call updateTable directly to render initial table and attach listeners
+        }
+
+        function renderInventoryItems() {
+            // This function now just returns a placeholder.
+            // The actual table rendering and listener attachment will be in _initInventoryItemsTableListeners()
+            return `<div id="tempItemContent"></div>`;
+        }
+
+        // New function to handle rendering and listeners for Categories table
+        function _initCategoriesTableListeners() {
+            const itemsPerPage = 5;
+            let currentPage = 1;
+            let currentSortColumn = null;
+            let currentSortDirection = 'asc';
+            let currentSearchTerm = '';
+
+            function updateTable() {
+                let filteredCategories = categories.filter(cat =>
+                    cat.name.toLowerCase().includes(currentSearchTerm.toLowerCase())
+                );
+
+                if (currentSortColumn) {
+                    filteredCategories.sort((a, b) => {
+                        const valA = a[currentSortColumn];
+                        const valB = b[currentSortColumn];
+
+                        if (typeof valA === 'string') {
+                            return currentSortDirection === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA);
+                        }
+                        return currentSortDirection === 'asc' ? valA - valB : valB - valA;
+                    });
+                }
+
+                const totalPages = Math.ceil(filteredCategories.length / itemsPerPage);
+                const startIndex = (currentPage - 1) * itemsPerPage;
+                const endIndex = startIndex + itemsPerPage;
+                const paginatedCategories = filteredCategories.slice(startIndex, endIndex);
+
+                let categoriesHtml = `
+                    <div class="search-container">
+                        <input type="text" id="categorySearchInput" class="input-field" placeholder="Pesquisar categorias..." value="${currentSearchTerm}">
+                        <button id="clearSearchBtn" class="button-base btn-info !w-auto">Limpar</button>
+                    </div>
+                    <div class="crud-buttons-container">
+                        <button id="addCategoryBtn" class="button-base btn-success">Cadastrar Categoria</button>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th data-sort="id">ID</th>
+                                <th data-sort="name">Nome</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                if (paginatedCategories.length === 0) {
+                    categoriesHtml += `
+                        <tr>
+                            <td colspan="3" class="text-center text-gray-500 italic">Nenhuma categoria encontrada.</td>
+                        </tr>
+                    `;
+                } else {
+                    paginatedCategories.forEach(category => {
+                        categoriesHtml += `
+                            <tr>
+                                <td>${category.id}</td>
+                                <td>${category.name}</td>
+                                <td class="action-buttons">
+                                    <button data-id="${category.id}" class="button-base btn-info edit-category-btn">Editar</button>
+                                    <button data-id="${category.id}" class="button-base btn-danger delete-category-btn">Excluir</button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                }
+                categoriesHtml += `
+                        </tbody>
+                    </table>
+                    <div class="pagination-controls">
+                        <button id="prevPageBtn" ${currentPage === 1 ? 'disabled' : ''}>Anterior</button>
+                        <span>Página ${currentPage} de ${totalPages || 1}</span>
+                        <button id="nextPageBtn" ${currentPage === totalPages || totalPages === 0 ? 'disabled' : ''}>Próxima</button>
+                    </div>
+                `;
+                document.getElementById('sectionContent').innerHTML = categoriesHtml;
+
+                document.getElementById('addCategoryBtn').addEventListener('click', () => showCrudModal('category'));
+                document.querySelectorAll('.edit-category-btn').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const id = parseInt(e.target.dataset.id);
+                        const categoryToEdit = categories.find(cat => cat.id === id);
+                        if (categoryToEdit) {
+                            showCrudModal('category', categoryToEdit);
+                        }
+                    });
+                });
+                document.querySelectorAll('.delete-category-btn').forEach(button => {
+                    button.addEventListener('click', (e) => deleteCategory(parseInt(e.target.dataset.id)));
+                });
+
+                document.querySelectorAll('.data-table th[data-sort]').forEach(header => {
+                    header.addEventListener('click', () => {
+                        const column = header.dataset.sort;
+                        if (currentSortColumn === column) {
+                            currentSortDirection = currentSortDirection === 'asc' ? 'desc' : 'asc';
+                        } else {
+                            currentSortColumn = column;
+                            currentSortDirection = 'asc';
+                        }
+                        updateTable();
+                    });
+                });
+
+                document.getElementById('prevPageBtn').addEventListener('click', () => {
+                    if (currentPage > 1) {
+                        currentPage--;
+                        updateTable();
+                    }
+                });
+                document.getElementById('nextPageBtn').addEventListener('click', () => {
+                    if (currentPage < totalPages) {
+                        currentPage++;
+                        updateTable();
+                    }
+                });
+
+                const categorySearchInput = document.getElementById('categorySearchInput');
+                categorySearchInput.addEventListener('input', () => {
+                    currentSearchTerm = categorySearchInput.value;
+                    currentPage = 1;
+                    updateTable();
+                });
+                document.getElementById('clearSearchBtn').addEventListener('click', () => {
+                    currentSearchTerm = '';
+                    categorySearchInput.value = '';
+                    currentPage = 1;
+                    updateTable();
+                });
+            }
+            updateTable(); // Call updateTable directly
+        }
+
+        function renderCategories() {
+            return `<div id="tempCategoryContent"></div>`;
+        }
+
+        // New function to handle rendering and listeners for Sectors table
+        function _initSectorsTableListeners() {
+            const itemsPerPage = 5;
+            let currentPage = 1;
+            let currentSortColumn = null;
+            let currentSortDirection = 'asc';
+            let currentSearchTerm = '';
+
+            function updateTable() {
+                let filteredSectors = sectors.filter(sec =>
+                    sec.name.toLowerCase().includes(currentSearchTerm.toLowerCase())
+                );
+
+                if (currentSortColumn) {
+                    filteredSectors.sort((a, b) => {
+                        const valA = a[currentSortColumn];
+                        const valB = b[currentSortColumn];
+
+                        if (typeof valA === 'string') {
+                            return currentSortDirection === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA);
+                        }
+                        return currentSortDirection === 'asc' ? valA - valB : valB - valA;
+                    });
+                }
+
+                const totalPages = Math.ceil(filteredSectors.length / itemsPerPage);
+                const startIndex = (currentPage - 1) * itemsPerPage;
+                const endIndex = startIndex + itemsPerPage;
+                const paginatedSectors = filteredSectors.slice(startIndex, endIndex);
+
+                let sectorsHtml = `
+                    <div class="search-container">
+                        <input type="text" id="sectorSearchInput" class="input-field" placeholder="Pesquisar setores..." value="${currentSearchTerm}">
+                        <button id="clearSearchBtn" class="button-base btn-info !w-auto">Limpar</button>
+                    </div>
+                    <div class="crud-buttons-container">
+                        <button id="addSectorBtn" class="button-base btn-success">Cadastrar Setor</button>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th data-sort="id">ID</th>
+                                <th data-sort="name">Nome</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                if (paginatedSectors.length === 0) {
+                    sectorsHtml += `
+                        <tr>
+                            <td colspan="3" class="text-center text-gray-500 italic">Nenhum setor encontrado.</td>
+                        </tr>
+                    `;
+                } else {
+                    paginatedSectors.forEach(sector => {
+                        sectorsHtml += `
+                            <tr>
+                                <td>${sector.id}</td>
+                                <td>${sector.name}</td>
+                                <td class="action-buttons">
+                                    <button data-id="${sector.id}" class="button-base btn-info edit-sector-btn">Editar</button>
+                                    <button data-id="${sector.id}" class="button-base btn-danger delete-sector-btn">Excluir</button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                }
+                sectorsHtml += `
+                        </tbody>
+                    </table>
+                    <div class="pagination-controls">
+                        <button id="prevPageBtn" ${currentPage === 1 ? 'disabled' : ''}>Anterior</button>
+                        <span>Página ${currentPage} de ${totalPages || 1}</span>
+                        <button id="nextPageBtn" ${currentPage === totalPages || totalPages === 0 ? 'disabled' : ''}>Próxima</button>
+                    </div>
+                `;
+                document.getElementById('sectionContent').innerHTML = sectorsHtml;
+
+                document.getElementById('addSectorBtn').addEventListener('click', () => showCrudModal('sector'));
+                document.querySelectorAll('.edit-sector-btn').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const id = parseInt(e.target.dataset.id);
+                        const sectorToEdit = sectors.find(sec => sec.id === id);
+                        if (sectorToEdit) {
+                            showCrudModal('sector', sectorToEdit);
+                        }
+                    });
+                });
+                document.querySelectorAll('.delete-sector-btn').forEach(button => {
+                    button.addEventListener('click', (e) => deleteSector(parseInt(e.target.dataset.id)));
+                });
+
+                document.querySelectorAll('.data-table th[data-sort]').forEach(header => {
+                    header.addEventListener('click', () => {
+                        const column = header.dataset.sort;
+                        if (currentSortColumn === column) {
+                            currentSortDirection = currentSortDirection === 'asc' ? 'desc' : 'asc';
+                        } else {
+                            currentSortColumn = column;
+                            currentSortDirection = 'asc';
+                        }
+                        updateTable();
+                    });
+                });
+
+                document.getElementById('prevPageBtn').addEventListener('click', () => {
+                    if (currentPage > 1) {
+                        currentPage--;
+                        updateTable();
+                    }
+                });
+                document.getElementById('nextPageBtn').addEventListener('click', () => {
+                    if (currentPage < totalPages) {
+                        currentPage++;
+                        updateTable();
+                    }
+                });
+
+                const sectorSearchInput = document.getElementById('sectorSearchInput');
+                sectorSearchInput.addEventListener('input', () => {
+                    currentSearchTerm = sectorSearchInput.value;
+                    currentPage = 1;
+                    updateTable();
+                });
+                document.getElementById('clearSearchBtn').addEventListener('click', () => {
+                    currentSearchTerm = '';
+                    sectorSearchInput.value = '';
+                    currentPage = 1;
+                    updateTable();
+                });
+            }
+            updateTable(); // Call updateTable directly
+        }
+
+        function renderSectors() {
+            return `<div id="tempSectorContent"></div>`;
+        }
+
+        function renderReports() {
+            return `
+                <div class="dashboard-section-placeholder">
+                    <p>Aqui você poderá visualizar dados e gerar relatórios do seu inventário.</p>
+                    <p>Use os filtros abaixo para personalizar seu relatório.</p>
+                    <div class="form-group mt-4">
+                        <label for="reportCategoryFilter">Filtrar por Categoria:</label>
+                        <select id="reportCategoryFilter" class="input-field">
+                            <option value="">Todas as Categorias</option>
+                            ${categories.map(cat => `<option value="${cat.name}">${cat.name}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="reportSectorFilter">Filtrar por Setor:</label>
+                        <select id="reportSectorFilter" class="input-field">
+                            <option value="">Todos os Setores</option>
+                            ${sectors.map(sec => `<option value="${sec.name}">${sec.name}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div class="crud-buttons-container mt-4">
+                        <button id="generateReportBtn" class="button-base btn-primary">Gerar Relatório</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- Funções de Lógica CRUD (com modais e manipulação de dados) ---
+
+        // Função para gerar um novo ID (simples, apenas para dados em memória)
+        function generateNextId(array) {
+            return array.length > 0 ? Math.max(...array.map(item => item.id)) + 1 : 1;
+        }
+
+        // Função para mostrar o modal CRUD
+        function showCrudModal(type, data = null) {
+            crudItemType.value = type; // Salva o tipo de item que está sendo editado/criado
+            crudForm.reset(); // Reseta o formulário
+
+            let title = '';
+            let fieldsHtml = '';
+
+            // Define os campos do formulário com base no tipo
+            if (type === 'item') {
+                title = data ? 'Editar Item de Inventário' : 'Cadastrar Novo Item';
+                fieldsHtml = `
+                    <div class="form-group">
+                        <label for="itemName">Nome do Item <span class="text-red-500">*</span></label>
+                        <input type="text" id="itemName" class="input-field" placeholder="Nome do item" required>
+                        <p id="itemNameError" class="error-message hidden"></p>
+                    </div>
+                    <div class="form-group">
+                        <label for="itemDescription">Descrição</label>
+                        <textarea id="itemDescription" class="input-field" placeholder="Descrição detalhada do item"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="itemSerialNumber">Número de Série/Patrimônio</label>
+                        <input type="text" id="itemSerialNumber" class="input-field" placeholder="Número de série ou patrimônio">
+                    </div>
+                    <div class="form-group">
+                        <label for="itemAcquisitionDate">Data de Aquisição</label>
+                        <input type="date" id="itemAcquisitionDate" class="input-field">
+                    </div>
+                    <div class="form-group">
+                        <label for="itemValue">Valor (R$)</label>
+                        <input type="number" id="itemValue" class="input-field" placeholder="Valor do item" step="0.01" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="itemStatus">Status</label>
+                        <select id="itemStatus" class="input-field">
+                            <option value="Em uso">Em uso</option>
+                            <option value="Em estoque">Em estoque</option>
+                            <option value="Manutenção">Manutenção</option>
+                            <option value="Desativado">Desativado</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="itemCategory">Categoria <span class="text-red-500">*</span></label>
+                        <select id="itemCategory" class="input-field" required>
+                            <option value="">Selecione a Categoria</option>
+                            ${categories.map(cat => `<option value="${cat.name}">${cat.name}</option>`).join('')}
+                        </select>
+                        <p id="itemCategoryError" class="error-message hidden"></p>
+                    </div>
+                    <div class="form-group">
+                        <label for="itemSector">Setor <span class="text-red-500">*</span></label>
+                        <select id="itemSector" class="input-field" required>
+                            <option value="">Selecione o Setor</option>
+                            ${sectors.map(sec => `<option value="${sec.name}">${sec.name}</option>`).join('')}
+                        </select>
+                        <p id="itemSectorError" class="error-message hidden"></p>
+                    </div>
+                    <div class="form-group">
+                        <label for="itemQuantity">Quantidade <span class="text-red-500">*</span></label>
+                        <input type="number" id="itemQuantity" class="input-field" placeholder="Quantidade" min="1" required>
+                        <p id="itemQuantityError" class="error-message hidden"></p>
+                    </div>
+                    <div class="photo-upload-section">
+                        <label class="block text-center mb-2 font-semibold text-gray-700">Foto do Item (Opcional)</label>
+                        <div class="photo-preview" id="itemPhotoPreview">
+                            <span>Sem Foto</span>
+                            <img id="itemPhotoImg" src="" alt="Foto do Item" class="hidden">
+                        </div>
+                        <div class="photo-buttons">
+                            <input type="file" id="uploadItemPhotoInput" accept="image/*" class="hidden">
+                            <button type="button" id="uploadItemPhotoButton" class="btn-upload">Upload Foto</button>
+                            <button type="button" id="removeItemPhotoButton" class="btn-remove hidden">Remover Foto</button>
+                        </div>
+                    </div>
+                `;
+            } else if (type === 'category') {
+                title = data ? 'Editar Categoria' : 'Cadastrar Nova Categoria';
+                fieldsHtml = `
+                    <div class="form-group">
+                        <label for="categoryName">Nome da Categoria <span class="text-red-500">*</span></label>
+                        <input type="text" id="categoryName" class="input-field" placeholder="Nome da categoria" required>
+                        <p id="categoryNameError" class="error-message hidden"></p>
+                    </div>
+                `;
+            } else if (type === 'sector') {
+                title = data ? 'Editar Setor' : 'Cadastrar Novo Setor';
+                fieldsHtml = `
+                    <div class="form-group">
+                        <label for="sectorName">Nome do Setor <span class="text-red-500">*</span></label>
+                        <input type="text" id="sectorName" class="input-field" placeholder="Nome do setor" required>
+                        <p id="sectorNameError" class="error-message hidden"></p>
+                    </div>
+                `;
+            }
+
+            crudModalTitle.textContent = title;
+            crudFormFields.innerHTML = fieldsHtml;
+
+            // Preenche os campos se for uma edição
+            if (data) {
+                crudItemId.value = data.id;
+                if (type === 'item') {
+                    document.getElementById('itemName').value = data.name;
+                    document.getElementById('itemDescription').value = data.description || '';
+                    document.getElementById('itemSerialNumber').value = data.serialNumber || '';
+                    document.getElementById('itemAcquisitionDate').value = data.acquisitionDate || '';
+                    document.getElementById('itemValue').value = data.value || '';
+                    document.getElementById('itemStatus').value = data.status || 'Em uso';
+                    document.getElementById('itemCategory').value = data.category;
+                    document.getElementById('itemSector').value = data.sector;
+                    document.getElementById('itemQuantity').value = data.quantity;
+
+                    // Lógica para foto do item
+                    if (data.itemPhoto) {
+                        document.getElementById('itemPhotoImg').src = data.itemPhoto;
+                        document.getElementById('itemPhotoImg').classList.remove('hidden');
+                        document.getElementById('itemPhotoPreview').querySelector('span').classList.add('hidden');
+                        document.getElementById('removeItemPhotoButton').classList.remove('hidden');
+                    } else {
+                        document.getElementById('itemPhotoImg').src = '';
+                        document.getElementById('itemPhotoImg').classList.add('hidden');
+                        document.getElementById('itemPhotoPreview').querySelector('span').classList.remove('hidden');
+                        document.getElementById('removeItemPhotoButton').classList.add('hidden');
+                    }
+                    document.getElementById('uploadItemPhotoInput').value = ''; // Limpa o input de arquivo
+                    document.getElementById('uploadItemPhotoButton').addEventListener('click', () => document.getElementById('uploadItemPhotoInput').click());
+                    document.getElementById('uploadItemPhotoInput').addEventListener('change', (event) => {
+                        const file = event.target.files[0];
+                        if (file) {
+                            const reader = new FileReader();
+                            reader.onload = (e) => {
+                                document.getElementById('itemPhotoImg').src = e.target.result;
+                                document.getElementById('itemPhotoImg').classList.remove('hidden');
+                                document.getElementById('itemPhotoPreview').querySelector('span').classList.add('hidden');
+                                document.getElementById('removeItemPhotoButton').classList.remove('hidden');
+                            };
+                            reader.readAsDataURL(file);
+                        }
+                    });
+                    document.getElementById('removeItemPhotoButton').addEventListener('click', () => {
+                        document.getElementById('itemPhotoImg').src = '';
+                        document.getElementById('itemPhotoImg').classList.add('hidden');
+                        document.getElementById('itemPhotoPreview').querySelector('span').classList.remove('hidden');
+                        document.getElementById('removeItemPhotoButton').classList.add('hidden');
+                        document.getElementById('uploadItemPhotoInput').value = '';
+                    });
+
+                } else if (type === 'category') {
+                    document.getElementById('categoryName').value = data.name;
+                } else if (type === 'sector') {
+                    document.getElementById('sectorName').value = data.name;
+                }
+            } else {
+                crudItemId.value = ''; // Limpa o ID para novas criações
+                if (type === 'item') {
+                    // Adiciona listeners para upload/remoção de foto para novos itens
+                    document.getElementById('uploadItemPhotoButton').addEventListener('click', () => document.getElementById('uploadItemPhotoInput').click());
+                    document.getElementById('uploadItemPhotoInput').addEventListener('change', (event) => {
+                        const file = event.target.files[0];
+                        if (file) {
+                            const reader = new FileReader();
+                            reader.onload = (e) => {
+                                document.getElementById('itemPhotoImg').src = e.target.result;
+                                document.getElementById('itemPhotoImg').classList.remove('hidden');
+                                document.getElementById('itemPhotoPreview').querySelector('span').classList.add('hidden');
+                                document.getElementById('removeItemPhotoButton').classList.remove('hidden');
+                            };
+                            reader.readAsDataURL(file);
+                        }
+                    });
+                    document.getElementById('removeItemPhotoButton').addEventListener('click', () => {
+                        document.getElementById('itemPhotoImg').src = '';
+                        document.getElementById('itemPhotoImg').classList.add('hidden');
+                        document.getElementById('itemPhotoPreview').querySelector('span').classList.remove('hidden');
+                        document.getElementById('removeItemPhotoButton').classList.add('hidden');
+                        document.getElementById('uploadItemPhotoInput').value = '';
+                    });
+                }
+            }
+
+            crudModal.classList.add('show');
+        }
+
+        // Função para ocultar o modal CRUD
+        function hideCrudModal() {
+            crudModal.classList.remove('show');
+            // Ocultar todas as mensagens de erro do formulário CRUD
+            document.querySelectorAll('#crudForm .error-message').forEach(el => el.classList.add('hidden'));
+        }
+
+        // Event listeners para o modal CRUD
+        closeCrudModalBtn.addEventListener('click', hideCrudModal);
+        cancelCrudOperationBtn.addEventListener('click', hideCrudModal);
+        crudModal.addEventListener('click', (e) => {
+            if (e.target === crudModal) {
+                hideCrudModal();
+            }
         });
-}
 
-function tirarFoto() {
-    const video = document.getElementById('regCameraVideo');
-    const tirarFotoBtn = document.getElementById('tirarFotoBtn');
-    if (!video.srcObject) {
-        alert('Câmera não iniciada.');
-        return;
-    }
-    const canvas = document.createElement('canvas');
-    canvas.width = video.videoWidth || 240;
-    canvas.height = video.videoHeight || 240;
-    const ctx = canvas.getContext('2d');
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-    const dataURL = canvas.toDataURL('image/png');
-    mostrarFotoPreview(dataURL);
-    fecharCamera();
-    localStorage.setItem('tempRegPhoto', dataURL);
-}
+        // Lógica de submissão do formulário CRUD
+        crudForm.addEventListener('submit', function(event) {
+            event.preventDefault();
 
-function fecharCamera() {
-    const video = document.getElementById('regCameraVideo');
-    const tirarFotoBtn = document.getElementById('tirarFotoBtn');
-    video.style.display = 'none';
-    tirarFotoBtn.style.display = 'none';
-    if (cameraStream) {
-        cameraStream.getTracks().forEach(track => track.stop());
-        cameraStream = null;
-    }
-    video.srcObject = null;
-}
+            const type = crudItemType.value;
+            const id = crudItemId.value ? parseInt(crudItemId.value) : null;
+            let isValid = true;
 
-function uploadFoto(event) {
-    const file = event.target.files[0];
-    if (file && file.type.startsWith('image/')) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            mostrarFotoPreview(e.target.result);
-            localStorage.setItem('tempRegPhoto', e.target.result);
+            // Limpa mensagens de erro
+            document.querySelectorAll('#crudForm .error-message').forEach(el => el.classList.add('hidden'));
+
+            if (type === 'item') {
+                const name = document.getElementById('itemName').value.trim();
+                const description = document.getElementById('itemDescription').value.trim();
+                const serialNumber = document.getElementById('itemSerialNumber').value.trim();
+                const acquisitionDate = document.getElementById('itemAcquisitionDate').value;
+                const value = parseFloat(document.getElementById('itemValue').value);
+                const status = document.getElementById('itemStatus').value;
+                const category = document.getElementById('itemCategory').value;
+                const sector = document.getElementById('itemSector').value;
+                const quantity = parseInt(document.getElementById('itemQuantity').value);
+                const itemPhoto = document.getElementById('itemPhotoImg').src;
+
+                if (!name) { showError('itemNameError', 'O nome do item é obrigatório.'); isValid = false; }
+                if (!category) { showError('itemCategoryError', 'A categoria é obrigatória.'); isValid = false; }
+                if (!sector) { showError('itemSectorError', 'O setor é obrigatório.'); isValid = false; }
+                if (isNaN(quantity) || quantity <= 0) { showError('itemQuantityError', 'A quantidade deve ser um número positivo.'); isValid = false; }
+
+                if (isValid) {
+                    const newItemData = {
+                        id: id || generateNextId(inventoryItems),
+                        name,
+                        description: description || null,
+                        serialNumber: serialNumber || null,
+                        acquisitionDate: acquisitionDate || null,
+                        value: isNaN(value) ? null : value,
+                        status,
+                        category,
+                        sector,
+                        quantity,
+                        itemPhoto: itemPhoto.includes('placehold.co') ? null : itemPhoto // Se for placeholder, salva como null
+                    };
+
+                    if (id) {
+                        // Editar item
+                        const itemIndex = inventoryItems.findIndex(item => item.id === id);
+                        if (itemIndex !== -1) {
+                            inventoryItems[itemIndex] = newItemData;
+                            showAlert('Sucesso!', 'Item atualizado com sucesso!', () => {
+                                saveDataToLocalStorage();
+                                renderMainDashboard();
+                                changeDashboardContent('items');
+                            });
+                        }
+                    } else {
+                        // Cadastrar novo item
+                        inventoryItems.push(newItemData);
+                        showAlert('Sucesso!', 'Item cadastrado com sucesso!', () => {
+                            saveDataToLocalStorage();
+                            renderMainDashboard();
+                            changeDashboardContent('items');
+                        });
+                    }
+                    hideCrudModal();
+                } else {
+                    showAlert('Erro de Validação', 'Por favor, preencha todos os campos obrigatórios corretamente.');
+                }
+            } else if (type === 'category') {
+                const name = document.getElementById('categoryName').value.trim();
+                if (!name) { showError('categoryNameError', 'O nome da categoria é obrigatório.'); isValid = false; }
+
+                if (isValid) {
+                    const newCategoryData = { id: id || generateNextId(categories), name };
+                    if (id) {
+                        // Editar categoria
+                        const categoryIndex = categories.findIndex(cat => cat.id === id);
+                        if (categoryIndex !== -1) {
+                            categories[categoryIndex] = newCategoryData;
+                            showAlert('Sucesso!', 'Categoria atualizada com sucesso!', () => {
+                                saveDataToLocalStorage();
+                                renderMainDashboard();
+                                changeDashboardContent('categories');
+                            });
+                        }
+                    } else {
+                        // Cadastrar nova categoria
+                        categories.push(newCategoryData);
+                        showAlert('Sucesso!', 'Categoria cadastrada com sucesso!', () => {
+                            saveDataToLocalStorage();
+                            renderMainDashboard();
+                            changeDashboardContent('categories');
+                        });
+                    }
+                    hideCrudModal();
+                } else {
+                    showAlert('Erro de Validação', 'Por favor, preencha o nome da categoria.');
+                }
+            } else if (type === 'sector') {
+                const name = document.getElementById('sectorName').value.trim();
+                if (!name) { showError('sectorNameError', 'O nome do setor é obrigatório.'); isValid = false; }
+
+                if (isValid) {
+                    const newSectorData = { id: id || generateNextId(sectors), name };
+                    if (id) {
+                        // Editar setor
+                        const sectorIndex = sectors.findIndex(sec => sec.id === id);
+                        if (sectorIndex !== -1) {
+                            sectors[sectorIndex] = newSectorData;
+                            showAlert('Sucesso!', 'Setor atualizado com sucesso!', () => {
+                                saveDataToLocalStorage();
+                                renderMainDashboard();
+                                changeDashboardContent('sectors');
+                            });
+                        }
+                    } else {
+                        // Cadastrar novo setor
+                        sectors.push(newSectorData);
+                        showAlert('Sucesso!', 'Setor cadastrado com sucesso!', () => {
+                            saveDataToLocalStorage();
+                            renderMainDashboard();
+                            changeDashboardContent('sectors');
+                        });
+                    }
+                    hideCrudModal();
+                } else {
+                    showAlert('Erro de Validação', 'Por favor, preencha o nome do setor.');
+                }
+            }
+        });
+
+        // --- Funções de Exclusão ---
+
+        function deleteItem(id) {
+            showConfirmDialog('Confirmar Exclusão', 'Tem certeza que deseja excluir este item?', () => {
+                inventoryItems = inventoryItems.filter(item => item.id !== id);
+                showAlert('Sucesso!', 'Item excluído com sucesso!', () => {
+                    saveDataToLocalStorage();
+                    renderMainDashboard();
+                    changeDashboardContent('items');
+                });
+            });
         }
-        reader.readAsDataURL(file);
-    }
-    event.target.value = "";
-}
 
-function mostrarFotoPreview(dataURL) {
-    const preview = document.getElementById('regPhotoPreview');
-    preview.src = dataURL;
-    preview.style.display = '';
-}
-
-function removerFoto() {
-    document.getElementById('regPhotoPreview').src = '';
-    document.getElementById('regPhotoPreview').style.display = 'none';
-    localStorage.removeItem('tempRegPhoto');
-}
-// ----------- FIM FOTO REGISTRO ------------
-
-        // Função para fechar o modal de boas-vindas e mostrar tela de login
-        function fecharWelcome() {
-            document.getElementById('welcomeModal').classList.remove('active');
-            document.getElementById('welcomeModal').classList.add('hidden');
-            document.getElementById('loginContainer').style.display = 'block';
-        }
-        // Corrige o botão Entrar da tela de apresentação
-        const welcomeEntrarBtn = document.getElementById('welcomeEntrarBtn');
-        if (welcomeEntrarBtn) {
-            welcomeEntrarBtn.onclick = fecharWelcome;
+        function deleteCategory(id) {
+            showConfirmDialog('Confirmar Exclusão', 'Tem certeza que deseja excluir esta categoria? Isso não removerá os itens associados a ela.', () => {
+                categories = categories.filter(category => category.id !== id);
+                showAlert('Sucesso!', 'Categoria excluída com sucesso!', () => {
+                    saveDataToLocalStorage();
+                    renderMainDashboard();
+                    changeDashboardContent('categories');
+                });
+            });
         }
 
-        // Inicialização
-        // Garante que apenas a tela de boas-vindas apareça ao iniciar
-        window.onload = function() {
-            document.getElementById('welcomeModal').classList.add('active');
-            document.getElementById('welcomeModal').classList.remove('hidden');
-            document.getElementById('loginContainer').style.display = 'none';
-            document.getElementById('mainContainer').style.display = 'none';
+        function deleteSector(id) {
+            showConfirmDialog('Confirmar Exclusão', 'Tem certeza que deseja excluir este setor? Isso não removerá os itens associados a ele.', () => {
+                sectors = sectors.filter(sector => sector.id !== id);
+                showAlert('Sucesso!', 'Setor excluído com sucesso!', () => {
+                    saveDataToLocalStorage();
+                    renderMainDashboard();
+                    changeDashboardContent('sectors');
+                });
+            });
         }
+
+        // --- Adicionar Event Listeners para os Botões CRUD ---
+        // This function is now mostly for the "Add" buttons and the edit/delete buttons
+        // that are re-created with the table. Search, sort, and pagination listeners
+        // are handled within the _initTableListeners functions.
+        function addCrudEventListeners(section) {
+            const sectionContent = document.getElementById('sectionContent');
+
+            if (section === 'items') {
+                // Listeners for item-specific buttons are now within _initInventoryItemsTableListeners
+            } else if (section === 'categories') {
+                // Listeners for category-specific buttons are now within _initCategoriesTableListeners
+            } else if (section === 'sectors') {
+                // Listeners for sector-specific buttons are now within _initSectorsTableListeners
+            } else if (section === 'reports') {
+                // This block remains as it was, as reports don't have a dynamic table update function
+                // The listener for generateReportBtn is directly in changeDashboardContent for 'reports'
+            }
+        }
+
+        // --- Lógica do Modal de Criar/Editar Perfil (Admin) ---
+
+        // Função para mostrar o modal de Criar/Editar Perfil
+        function showCreateProfileModal(isEditing = false) {
+            // Ocultar todas as mensagens de erro antes de abrir
+            document.querySelectorAll('.error-message').forEach(el => el.classList.add('hidden'));
+
+            if (isEditing && adminProfile) {
+                createProfileModalTitle.textContent = 'Editar Perfil Administrador';
+                document.getElementById('profileEmail').value = adminProfile.email;
+                document.getElementById('profileName').value = adminProfile.name;
+                // Senha e confirmar senha não são preenchidas por segurança
+                document.getElementById('profilePassword').value = '';
+                document.getElementById('profileConfirmPassword').value = '';
+                if (adminProfile.photo) {
+                    userPhoto.src = adminProfile.photo;
+                    userPhoto.classList.remove('hidden');
+                    photoPreview.querySelector('span').classList.add('hidden');
+                    removePhotoButton.classList.remove('hidden');
+                } else {
+                    removePhoto();
+                }
+                // Desabilita o campo de e-mail na edição para evitar mudança do identificador principal
+                document.getElementById('profileEmail').disabled = true;
+            } else {
+                createProfileModalTitle.textContent = 'Configurar Perfil Administrador';
+                createProfileForm.reset();
+                removePhoto();
+                // Habilita o campo de e-mail na criação
+                document.getElementById('profileEmail').disabled = false;
+            }
+
+            hideCameraStream(); // Garante que a câmera esteja desligada ao abrir
+            createProfileModal.classList.add('show');
+        }
+
+        // Função para ocultar o modal de Criar/Editar Perfil
+        function hideCreateProfileModal() {
+            createProfileModal.classList.remove('show');
+            stopCameraStream(); // Parar o stream da câmera ao fechar o modal
+        }
+
+        // Event listeners para fechar o modal
+        closeCreateProfileModalBtn.addEventListener('click', hideCreateProfileModal);
+        cancelCreateProfileBtn.addEventListener('click', hideCreateProfileModal);
+        // Fechar modal clicando fora do conteúdo
+        createProfileModal.addEventListener('click', (e) => {
+            if (e.target === createProfileModal) {
+                hideCreateProfileModal();
+            }
+        });
+
+        // Lógica de foto: Tirar Foto (Câmera)
+        takePhotoButton.addEventListener('click', async () => {
+            try {
+                cameraStreamContainer.classList.remove('hidden');
+                currentStream = await navigator.mediaDevices.getUserMedia({ video: true });
+                cameraStream.srcObject = currentStream;
+            } catch (err) {
+                console.error("Erro ao acessar a câmera: ", err);
+                showAlert("Erro de Câmera", "Não foi possível acessar a câmera. Verifique as permissões.");
+                cameraStreamContainer.classList.add('hidden');
+            }
+        });
+
+        // Lógica de foto: Capturar Foto da Câmera
+        capturePhotoButton.addEventListener('click', () => {
+            if (currentStream) {
+                const context = photoCanvas.getContext('2d');
+                photoCanvas.width = cameraStream.videoWidth;
+                photoCanvas.height = cameraStream.videoHeight;
+                context.drawImage(cameraStream, 0, 0, photoCanvas.width, photoCanvas.height);
+                const imageDataUrl = photoCanvas.toDataURL('image/png');
+                userPhoto.src = imageDataUrl;
+                userPhoto.classList.remove('hidden');
+                photoPreview.querySelector('span').classList.add('hidden');
+                removePhotoButton.classList.remove('hidden');
+                hideCameraStream();
+            }
+        });
+
+        // Função para parar o stream da câmera
+        function stopCameraStream() {
+            if (currentStream) {
+                currentStream.getTracks().forEach(track => track.stop());
+                cameraStream.srcObject = null;
+                currentStream = null;
+            }
+        }
+
+        // Função para ocultar o container da câmera
+        function hideCameraStream() {
+            cameraStreamContainer.classList.add('hidden');
+            stopCameraStream();
+        }
+
+        // Lógica de foto: Upload de Foto
+        uploadPhotoButton.addEventListener('click', () => {
+            uploadPhotoInput.click();
+        });
+
+        uploadPhotoInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    userPhoto.src = e.target.result;
+                    userPhoto.classList.remove('hidden');
+                    photoPreview.querySelector('span').classList.add('hidden');
+                    removePhotoButton.classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Lógica de foto: Remover Foto
+        removePhotoButton.addEventListener('click', removePhoto);
+
+        function removePhoto() {
+            userPhoto.src = '';
+            userPhoto.classList.add('hidden');
+            photoPreview.querySelector('span').classList.remove('hidden');
+            removePhotoButton.classList.add('hidden');
+            uploadPhotoInput.value = '';
+            hideCameraStream();
+        }
+
+        // Lógica de validação e envio do formulário de Criar Perfil (Admin)
+        createProfileForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            document.querySelectorAll('.error-message').forEach(el => el.classList.add('hidden'));
+
+            const email = document.getElementById('profileEmail').value.trim();
+            const name = document.getElementById('profileName').value.trim();
+            const password = document.getElementById('profilePassword').value;
+            const confirmPassword = document.getElementById('profileConfirmPassword').value;
+            const profileType = document.getElementById('profileType').value; // Sempre 'administrador'
+            const photoData = userPhoto.src;
+
+            let isValid = true;
+
+            // Validação de E-mail
+            if (!email || !/\S+@\S+\.\S+/.test(email)) {
+                showError('emailError', 'Por favor, insira um e-mail válido.');
+                isValid = false;
+            } else if (!adminProfile && localStorage.getItem('adminProfile') && email === JSON.parse(localStorage.getItem('adminProfile')).email) {
+                showError('emailError', 'Este e-mail já está em uso por outro perfil administrador.');
+                isValid = false;
+            }
+
+            // Validação de Nome
+            if (!name) {
+                showError('nameError', 'Por favor, insira o nome.');
+                isValid = false;
+            }
+
+            // Validação de Senha (apenas se for um novo cadastro ou se a senha for preenchida na edição)
+            const isEditing = createProfileModalTitle.textContent.includes('Editar');
+            if (!isEditing || (password || confirmPassword)) {
+                if (password.length < 6) {
+                    showError('passwordError', 'A senha deve ter no mínimo 6 caracteres.');
+                    isValid = false;
+                }
+                if (password !== confirmPassword) {
+                    showError('confirmPasswordError', 'As senhas não coincidem.');
+                    isValid = false;
+                }
+            }
+
+            if (isValid) {
+                const newAdminProfile = {
+                    email: email,
+                    name: name,
+                    password: password || (adminProfile ? adminProfile.password : ''), // Mantém a senha existente se não for alterada
+                    photo: photoData.includes('placehold.co') ? null : photoData, // Se for placeholder, salva como null
+                    profileType: 'administrador'
+                };
+
+                adminProfile = newAdminProfile; // Atualiza a variável global
+                saveDataToLocalStorage(); // Salva no Local Storage
+
+                showAlert('Sucesso!', 'Perfil do administrador salvo com sucesso!', () => {
+                    hideCreateProfileModal();
+                    if (loggedInUser) { // Se já estava logado, atualiza o dashboard
+                        loggedInUser = adminProfile; // Atualiza o usuário logado
+                        renderMainDashboard();
+                    } else { // Se estava criando o primeiro perfil, vai para o login
+                        renderLoginScreen();
+                    }
+                });
+            } else {
+                showAlert('Campos Obrigatórios', 'Por favor, preencha todos os campos obrigatórios corretamente.');
+            }
+        });
+
+        // --- Inicialização da Aplicação ---
+
+        // Função para inicializar a aplicação
+        function initializeApplication() {
+            loadDataFromLocalStorage(); // Carrega os dados do Local Storage
+            if (adminProfile) {
+                renderLoginScreen(); // Se já existe um admin, vai para a tela de login
+            } else {
+                renderPresentationScreen(); // Se não há admin, vai para a tela de apresentação
+            }
+        }
+
+        // Inicia a aplicação quando o DOM estiver carregado
+        document.addEventListener('DOMContentLoaded', initializeApplication);
     </script>
 </body>
 </html>

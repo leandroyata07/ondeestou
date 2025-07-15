@@ -2503,14 +2503,10 @@
         // --- Inicialização da Aplicação ---
 
         // Função para inicializar a aplicação
-        function initializeApplication() {
-            loadDataFromLocalStorage(); // Carrega os dados do Local Storage
-            if (adminProfile) {
-                renderLoginScreen(); // Se já existe um admin, vai para a tela de login
-            } else {
-                renderPresentationScreen(); // Se não há admin, vai para a tela de apresentação
-            }
-        }
+       function initializeApplication() {
+    loadDataFromLocalStorage();
+    renderPresentationScreen(); // Sempre mostra a tela de apresentação primeiro
+}
 
         // Inicia a aplicação quando o DOM estiver carregado
         document.addEventListener('DOMContentLoaded', initializeApplication);

@@ -27,7 +27,7 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background-color: var(--color-bg-light);
+            background-color: var(--color-info);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -41,7 +41,7 @@
             border-radius: 1.5rem;
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
             max-width: 90%;
-            width: 500px;
+            width: 400px;
             padding: 2.5rem;
             text-align: center;
             display: flex;
@@ -1215,7 +1215,7 @@
             appDiv.className = 'app-container'; // Garante que o container principal tenha o estilo padrão
             appDiv.innerHTML = `
                 <!-- Replace the emoji icon with an image. You can change the 'src' attribute to your image URL. -->
-                <img src="imagens/logo2.png" alt="Logo">
+                <img src="imagens/logo4.png" alt="Logo">
                 <h2 class="title">Controle de Inventário</h2>
                 <p class="slogan">Organize seu mundo. Encontre tudo o que precisa.</p>
                 <button id="enterButton" class="button-base btn-primary">Entrar</button>
@@ -1231,7 +1231,7 @@
                 <input type="email" id="username" placeholder="E-mail do Administrador" class="input-field">
                 <input type="password" id="password" placeholder="Senha" class="input-field">
                 <button id="loginButton" class="button-base btn-primary">Entrar</button>
-                <button id="createAdminProfileButton" class="button-base btn-success mt-4 ${adminProfile ? 'hidden' : ''}">Criar Perfil Administrador</button>
+                <button id="createAdminProfileButton" class="button-base btn-success mt-4 ${adminProfile ? 'hidden' : ''}">Criar Perfil</button>
                 <button id="backToPresentation" class="button-base bg-gray-200 text-gray-700 hover:bg-gray-300">Voltar</button>
             `;
 
